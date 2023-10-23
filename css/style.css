@@ -241,7 +241,14 @@ html {
 }
 
 .banner>.name {
-    display: flex;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 8px;
+    text-align: center;
+    line-height: 28px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     justify-content: center;
     align-items: center;
 }
