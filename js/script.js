@@ -69,11 +69,11 @@ class CustomShortcutsCollection extends ShortcutCollections {
                 const _desc = this.querySelector("input.desc").value;
                 if (_name === '') {
                     CustomShortcutsCollection.showMessage('名称不能为空')
-                } else if (url === '') {
+                } else if (_url === '') {
                     CustomShortcutsCollection.showMessage('链接不能为空')
                 } else {
                     try {
-                        new URL(url);
+                        new URL(_url);
                         if (typeof onsuccess === 'function') {
                             onsuccess(_name, _url, _icon, _desc);
                         }
