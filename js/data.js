@@ -50,7 +50,7 @@ export class Shortcut {
             this.edit();
             e.preventDefault();
             e.stopPropagation();
-        }.bind(this), { once: true });
+        }.bind(this));
     };
     get parent() {
         return this._parent;
