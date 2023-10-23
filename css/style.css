@@ -16,7 +16,7 @@ html {
 
 @font-face {
     font-family: material-icon;
-    src: url("src/material-icons.woff2");
+    src: url("../src/material-icons.woff2");
 }
 
 #app {
@@ -244,6 +244,7 @@ html {
     display: block;
     width: 100%;
     box-sizing: border-box;
+    overflow: hidden;
     padding: 0 8px;
     text-align: center;
     line-height: 28px;
