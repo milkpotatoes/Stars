@@ -8,8 +8,6 @@ export const STATIC_SOURCE = {
     WUZHUI_ICON: 'src/4c2fbdc441989d18-icon.svg',
     DUCKDUCKGO_LOGO: 'src/duckduckgo.svg',
     DUCKDUCKGO_ICON: 'src/duckduckgo-icon.svg',
-    BAIDU_LOGO: 'src/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png',
-    BAIDU_ICON: 'src/baidu-icon.png',
     S360_LOGO: 'src/360-search-logo.svg',
     S360_ICON: 'src/121a1737750aa53d.ico',
     SOGOU_LOGO: 'src/logo_880x280_06c7476.png',
@@ -52,13 +50,6 @@ export const SEARCH_ENGINES = [
         url: 'https://www.wuzhuiso.com/s?ie=utf-8&q=%s',
         logo: 'DUCKDUCKGO_LOGO',
         icon: 'DUCKDUCKGO_ICON',
-    },
-    {
-        name: 'Baidu',
-        index: 'https://www.baidu.com/',
-        url: 'https://www.baidu.com/s?wd=%s',
-        logo: 'BAIDU_LOGO',
-        icon: 'BAIDU_ICON',
     },
     {
         name: '360搜索',
