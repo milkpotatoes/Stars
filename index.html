@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新建标签页</title>
+    <style>
+        body,
+        html,
+        #app,
+        .wallpaper {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            color: white;
+        }
+
+        html {
+            background: transparent center no-repeat;
+            background-size: cover;
+        }
+
+        @font-face {
+            font-family: material-icon;
+            src: url("src/material-icons.woff2");
+        }
+
+        #app {
+            display: grid;
+            grid-template-columns: 1fr 960px 1fr;
+            grid-template-rows: 1fr 34% 30% 1fr;
+            grid-template-areas:
+                ". . ."
+                ". s ."
+                ". l ."
+                ". . .";
+            justify-items: center;
+            align-items: center;
+        }
+
+        .blur {
+            -webkit-backdrop-filter: blur(16px) saturate(.8);
+            backdrop-filter: blur(16px) saturate(.8);
+        }
+
+        .wallpaper {
+            position: absolute;
+            background: transparent center no-repeat;
+            background-size: cover;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            background: rgba(0 0 0 / .05);
+        }
+
+        .search-box {
+            grid-area: s;
+            width: 100%;
+            max-width: min(640px, 75%);
+            position: relative;
+        }
+
+        .search-logo {
+            width: 320px;
+            height: 160px;
+            background: transparent center no-repeat;
+            background-size: contain;
+            margin: 16px auto;
+        }
+
+        .search-input {
+            display: grid;
+            grid-template-rows: 40px;
+            grid-template-columns: 32px 1fr 72px;
+            background: rgba(0 0 0 / .06);
+            width: 100%;
+            height: 40px;
+            align-items: center;
+            padding: 0 12px;
+            border-radius: 20px;
+            box-sizing: border-box;
+        }
+
+        .search-input>button,
+        .search-input>input {
+            background: none;
+            border: none;
+            outline: none;
+            color: white;
+            font-size: 16px;
+        }
+
+        .search-input>button {
+            width: 84px;
+            border-radius: 20px;
+            height: 100%;
+            background-color: rgba(0 0 0 / .06);
+            transition: ease-in-out .2s;
+            cursor: pointer;
+            box-shadow: 0 0px 12px -8px rgba(255 255 255 / .08);
+        }
+
+        .search-input>button:hover {
+            margin-bottom: 4px;
+            background-color: rgba(0 0 0 / .06);
+            box-shadow: 0 12px 16px -12px rgba(255 255 255 / .16);
+        }
+
+        .search-select {
+            flex-direction: column;
+            width: 156px;
+            background: rgba(0 0 0 / .1);
+            border-radius: 20px;
+            position: absolute;
+            top: 100%;
+            transform: translate(0, -40px);
+            -webkit-user-select: none;
+            user-select: none;
+            transition: ease-in-out .2s;
+            overflow: hidden;
+            height: calc(var(--items) * 40px);
+            display: none;
+            grid-auto-rows: 40px;
+            grid-auto-columns: 156px;
+            z-index: 1;
+        }
+
+        .search-select.hidden {
+            width: 124px;
+            height: calc(var(--items) * 36px);
+            opacity: 0;
+        }
+
+        .search-select div {
+            opacity: .8;
+            display: grid;
+            grid-template-columns: 20px 1fr;
+            height: 40px;
+            align-items: center;
+            gap: 12px;
+            padding: 0 12px;
+            box-sizing: border-box;
+            font-size: 15px;
+            transition: inherit;
+        }
+
+        .search-select div:hover {
+            background: rgba(0 0 0 / .1);
+        }
+
+        .search-icon {
+            cursor: pointer;
+        }
+
+        .search-icon,
+        .search-select div .icon {
+            width: 20px;
+            height: 20px;
+            display: block;
+            background: transparent center no-repeat;
+            background-size: contain;
+            border-radius: 50%;
+            transition: ease-in-out .2s;
+            outline: solid 4px transparent;
+        }
+
+        .search-icon:hover,
+        .search-select div.selected .icon {
+            background-color: rgba(0 0 0 / .16);
+            outline: solid 4px rgba(0 0 0 / .16);
+        }
+
+        .shortcuts {
+            grid-area: l;
+            grid-template-rows: repeat(2, 100px);
+            display: grid;
+            gap: 24px;
+            grid-template-columns: repeat(8, 96px);
+        }
+
+        .shortcut {
+            /* background: rgba(0 0 0 / .06); */
+            border-radius: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: ease-in-out .2s;
+            --banner-position: -24px;
+            --banner-opacity: .2;
+        }
+
+        .shortcut:hover {
+            --banner-position: 0px;
+            --banner-opacity: .8;
+            background: rgba(255 255 255 / .1);
+
+        }
+
+        .shortcut .icon {
+            width: 48px;
+            height: 48px;
+            background: transparent center no-repeat;
+            background-size: contain;
+            font-family: 'material-icon';
+            font-size: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .shortcut .banner {
+            position: absolute;
+            bottom: var(--banner-position);
+            transition: inherit;
+            font-size: .8em;
+            height: 28px;
+            width: 100%;
+            display: grid;
+            grid-template-rows: repeat(2, 28px);
+            opacity: var(--banner-opacity);
+            --show-action: 0;
+            overflow: hidden;
+        }
+
+        .shortcut .banner:hover {
+            --show-action: -100%;
+        }
+
+        .add-shortcut .banner:hover {
+            --show-action: 0;
+        }
+
+        .banner>.name,
+        .banner>.action {
+            transform: translateY(var(--show-action));
+            transition: inherit;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .banner>.name {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .banner>.action {
+            background: rgba(0 0 0 / .3);
+            font-family: 'material-icon';
+            display: grid;
+            grid-template-columns: repeat(2, 24px);
+            align-items: center;
+            gap: 4px;
+            font-size: 16px;
+            grid-template-rows: 24px;
+            justify-content: center;
+            align-content: center;
+        }
+
+        .action>.edit,
+        .action>.delete {
+            text-align: center;
+            border-radius: 4px;
+            display: block;
+            width: 100%;
+            height: 100%;
+            line-height: 24px;
+            cursor: pointer;
+        }
+
+        .action>.edit:hover,
+        .action>.delete:hover {
+            background-color: rgba(0 0 0 / .1);
+        }
+    </style>
+    <script>
+        function colorfulImg(imgEl) {
+            let blockSize = 5, // only visit every 5 pixels
+                defaultRGB = { r: 0, g: 0, b: 0 }, // for non-supporting envs
+                canvas = document.createElement('canvas'),
+                context = canvas.getContext && canvas.getContext('2d'),
+                data, width, height,
+                i = -4,
+                length,
+                rgb = { r: 0, g: 0, b: 0 },
+                count = 0
+
+            if (!context) {
+                return defaultRGB;
+            }
+            height = canvas.height = imgEl.naturalHeight || imgEl.offsetHeight || imgEl.height;
+            width = canvas.width = imgEl.naturalWidth || imgEl.offsetWidth || imgEl.width;
+            context.drawImage(imgEl, 0, 0);
+            try {
+                data = context.getImageData(0, 0, width, height);
+            } catch (e) {
+                alert('security error, img on diff domain');
+                return defaultRGB;
+            }
+            length = data.data.length;
+            while ((i += blockSize * 4) < length) {
+                ++count;
+                rgb.r += data.data[i];
+                rgb.g += data.data[i + 1];
+                rgb.b += data.data[i + 2];
+            }
+            // ~~ used to floor values
+            rgb.r = ~~(rgb.r / count);
+            rgb.g = ~~(rgb.g / count);
+            rgb.b = ~~(rgb.b / count);
+            return rgb;
+        }
+    </script>
+</head>
+
+<body>
+    <div class="static-source">
+        <div class="GOOGLE_LOGO"></div>
+        <div class="GOOGLE_ICON"></div>
+        <div class="BING_LOGO"></div>
+        <div class="BING_ICON"></div>
+    </div>
+    <div id="app">
+        <div class="search-box">
+            <div class="search-logo"></div>
+            <form class="search-input blur" action="" method="">
+                <div class="search-icon"></div>
+                <input id="search-key" type="search" placeholder="搜索..."></input>
+                <button class="search-button" type="submit">搜索</button>
+            </form>
+            <div class="search-select hidden blur">
+                <template>
+                    <div>
+                        <span class="icon"></span>
+                        <span class="name"></span>
+                    </div>
+                </template>
+            </div>
+        </div>
+        <div class="shortcuts">
+            <template>
+                <div class="shortcut">
+                    <span class="icon"></span>
+                    <div class="banner">
+                        <span class="name"></span>
+                        <div class="action">
+                            <span class="edit">&#xe3c9;</span>
+                            <span class="delete">&#xe5cd;</span>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            <div class="shortcut add-shortcut">
+                <span class="icon">&#xe145;</span>
+                <div class="banner">
+                    <span class="name">添加</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="wallpaper"></div>
+<script type="module" src="js/script.js"></script>
+</body>
+
+</html>
