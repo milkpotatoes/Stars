@@ -263,14 +263,14 @@ export class StartProfile {
     addCustomSearchEngine(engine) {
         if (engine.name && engine.url && engine.index) {
             this.CustomSearchEngine.push(engine);
-            saveCustomSearchEngine()
+            this.saveCustomSearchEngine();
             return this.CustomSearchEngine.length - 1 + StartProfile.INNER_DIV;
         };
     };
     removeCustomSearchEngine(id) {
         if (id >= StartProfile.INNER_DIV) {
             this.CustomSearchEngine.splice(id - StartProfile.INNER_DIV, 1);
-            saveCustomSearchEngine()
+            this.saveCustomSearchEngine();
         } else {
             throw new Error('inner search engine is not allowed to remove, please use disable instead');
         }
