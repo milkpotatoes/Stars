@@ -45,8 +45,17 @@ export class Shortcut {
     };
 
     setClickEvent() {
-        this.elm.addEventListener('click', function () {
-            location.assign(this.url);
+        this.elm.addEventListener('mousedown', function (e) {
+            if (e.target.closest('.action') ||
+                e.target.classList.contains('indicator') ||
+                e.target.classList.contains('add-shortcut')) {
+                return;
+            };
+            if (e.buttons === 1) {
+                location.assign(this.url);
+            } else if (e.buttons === 4) {
+                window.open(this.url);
+            }
         }.bind(this));
     }
 

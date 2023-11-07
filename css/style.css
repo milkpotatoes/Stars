@@ -30,6 +30,12 @@ html {
         ". . .";
     justify-items: center;
     align-items: center;
+    transition: 1s ease-in-out;
+}
+
+#app.expand {
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
 }
 
 .blur {
@@ -92,6 +98,7 @@ html {
     width: 100%;
     max-width: min(640px, 75%);
     position: relative;
+    transition: 1s ease-in-out;
 }
 
 .search-logo {
@@ -217,10 +224,27 @@ html {
     display: grid;
     gap: 24px;
     grid-template-columns: repeat(8, 96px);
+    grid-auto-flow: dense;
+    overflow: hidden;
+    grid-auto-rows: 100px;
+    height: 224px;
+    transition: .6s ease-in-out;
+    position: relative;
+    order: 0;
+    scroll-behavior: smooth;
+}
+
+.shortcuts::after {
+    content: "";
+    width: 100%;
+    height: calc(100% - 24px);
+    display: block;
+    position: absolute;
+    top: 100%;
+    pointer-events: none;
 }
 
 .shortcut {
-    /* background: rgba(0 0 0 / .06); */
     border-radius: 16px;
     display: flex;
     justify-content: center;
@@ -233,6 +257,11 @@ html {
     --banner-position: -24px;
     --banner-opacity: .2;
     --show-indicator: 0;
+}
+
+.shortcut.add-shortcut {
+    opacity: 1 !important;
+    order: 0 !important;
 }
 
 .shortcut:hover {
@@ -353,8 +382,112 @@ html {
     opacity: .3;
 }
 
-.shortcut.drag-indicator {
-    border: dashed 2px rgba(255 255 255 / .5);
-    background: transparent;
-    display: none;
+#app.expand .search-box {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#app.expand .shortcuts {
+    margin-top: -280px;
+    grid-template-rows: repeat(5, 100px);
+    height: 596px;
+    background: rgba(255 255 255 / .16);
+    padding: 24px;
+    border-radius: 24px;
+}
+
+@keyframes expand-more {
+
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.shortcuts>.shortcut:nth-child(16)~.shortcut {
+    opacity: 0;
+    animation: reverse;
+    order: 1;
+}
+
+.expand .shortcuts>.shortcut:nth-child(16)~.shortcut {
+    order: 0;
+    opacity: 1;
+    animation: expand-more .8s ease-in-out 1;
+}
+
+.expand .shortcuts>.shortcut {
+    --banner-opacity: .8;
+    --banner-position: 0px;
+}
+
+@keyframes show-page-indicator {
+    0% {
+        filter: opacity(0);
+    }
+
+    50% {
+        filter: opacity(0);
+    }
+
+    100% {
+        filter: opacity(1);
+    }
+}
+
+@keyframes hide-page-indicator {
+    0% {
+        filter: opacity(1);
+    }
+
+    50% {
+        filter: opacity(0);
+    }
+
+    100% {
+        filter: opacity(0);
+    }
+}
+
+.pages-indicator {
+    display: flex;
+    position: fixed;
+    transform: translate(960px, calc(322px - 50%));
+    gap: 8px;
+    align-items: center;
+    filter: opacity(0);
+    flex-direction: column;
+    width: 24px;
+    height: auto;
+    animation: hide-page-indicator .6s ease-in-out 1;
+}
+
+.expand .pages-indicator {
+    filter: opacity(1);
+    animation-name: show-page-indicator;
+}
+
+.page-indicator {
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border-radius: 50%;
+    opacity: .36;
+    margin: 1px;
+}
+
+
+.page-indicator:hover {
+    opacity: .6;
+    margin: 0;
+    height: 10px;
+    width: 10px;
+    transition: .2s ease-in-out;
+}
+
+.page-indicator.current {
+    opacity: 1;
 }

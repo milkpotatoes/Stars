@@ -4,11 +4,31 @@ import { STATIC_SOURCE } from "./resource.js";
 import { colorfulImg } from "./colorfulimg.js";
 
 class CustomShortcutsCollection extends ShortcutCollections {
+    static PAGE_SIZE = 40;
+    static PAGE_HEIGHT = 620;
+    _currentPage = 0;
+    get pagesCount() {
+        return Math.ceil((this.size() + 1) / CustomShortcutsCollection.PAGE_SIZE);
+    }
+    get currentPage() {
+        return this._currentPage;
+    };
+    set currentPage(page) {
+        page = Math.max(Math.min(this.pagesCount - 1, page), 0);
+        this._elm.scrollTop = page * CustomShortcutsCollection.PAGE_HEIGHT;
+        const container = this._elm.querySelector('.pages-indicator');
+        container.querySelector('.current').classList.remove('current');
+        container.children[page].classList.add('current');
+        this._currentPage = page;
+    }
     constructor(elm) {
         super(elm);
         this._add_elm.addEventListener('click', this.userAdd.bind(this));
         if (localStorage.ShortcutLinks !== undefined) {
             const _json = JSON.parse(localStorage.ShortcutLinks);
+            if (!localStorage.AddedProjectIndex) {
+                _json.splice(0, 0, this.projectIndex());
+            }
             for (let link of _json) {
                 this.add({
                     name: link.name,
@@ -18,13 +38,14 @@ class CustomShortcutsCollection extends ShortcutCollections {
                 });
             }
         };
-    }
+        this.saveLinks();
+    };
     static showMessage(msg = '') {
         new AlertDialog()
             .setMessage(msg)
             .setPositiveButton('关闭')
-            .show()
-    }
+            .show();
+    };
     static fileToBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -38,7 +59,26 @@ class CustomShortcutsCollection extends ShortcutCollections {
                 reject(new Error("Failed to load file"));
             };
         });
-    }
+    };
+    refreshPageIndicator() {
+        const pagesIndicator = this._elm.querySelector('.pages-indicator');
+        const indicators = pagesIndicator.querySelectorAll('.page-indicator');
+        indicators.forEach(element => {
+            element.remove();
+        });
+        const pages = this.pagesCount;
+        for (let i = 0; i < pages; i++) {
+            const indicator = document.createElement('div');
+            indicator.classList.add('page-indicator');
+            if (i === this.currentPage) {
+                indicator.classList.add('current');
+            }
+            indicator.addEventListener('click', function () {
+                this.currentPage = i;
+            }.bind(this));
+            pagesIndicator.append(indicator);
+        };
+    };
     saveLinks() {
         const links = [];
         for (let link of this._shortcutCollections) {
@@ -50,12 +90,13 @@ class CustomShortcutsCollection extends ShortcutCollections {
             });
         }
         localStorage.ShortcutLinks = JSON.stringify(links);
-    }
+        this.refreshPageIndicator();
+    };
     remove(id) {
         const val = super.remove(id);
         this.saveLinks();
         return val;
-    }
+    };
     editAddDialog(onsuccess = undefined, name = '', url = '', icon = undefined, desc = '') {
         const customView = `<style>div {display: grid; grid-template-columns: 72px 1fr; grid-template-rows: repeat(3, 32px); grid-template-areas: "i n" "i u" "i d"; gap: 4px 16px; align-items: center; } .icon { grid-area: i; width: 72px; height: 72px; background: rgba(0 0 0 / .1); } </style> <div> <img class="icon" src="src/image_FILL0_wght400_GRAD0_opsz24.svg"> <input type="file" style="display: none;" class="icon" accept="image/*"> <input type="text" placeholder="名称" class="name"><input type="text" placeholder="链接" class="url"><input type="text" placeholder="描述" class="desc"></div>`;
         const collection = this;
@@ -122,7 +163,7 @@ class CustomShortcutsCollection extends ShortcutCollections {
                     });
             }
         });
-    }
+    };
     edit(id) {
         const link = this.at(id);
         this.editAddDialog((name, url, icon, desc) => {
@@ -131,7 +172,7 @@ class CustomShortcutsCollection extends ShortcutCollections {
             link.icon = icon;
             link.desc = desc;
         }, link.name, link.url, link.icon, link.desc);
-    }
+    };
     userAdd() {
         this.editAddDialog((name, url, icon, desc) => {
             this.add({
@@ -141,6 +182,15 @@ class CustomShortcutsCollection extends ShortcutCollections {
                 desc: desc,
             });
         })
+    };
+    projectIndex() {
+        localStorage.AddedProjectIndex = new Date().getTime();
+        return {
+            name: '项目主页',
+            url: 'https://gitee.com/milkpotatoes/stars',
+            icon: 'src/start-512x512.png',
+            desc: '个性化新建标签页',
+        };
     }
 }
 
@@ -238,11 +288,11 @@ function editSearchIcon(icon = '', logo = '', url = '', editable = true) {
                 reslove([logo_view, icon_view]);
             })
             .setNegativeButton('取消')
-            .onShow((e) => {
-                const file_select = e.querySelector('input[type=file]');
-                const logo_view = e.querySelector('.logo');
-                const icon_view = e.querySelector('div.icon');
-                const use_favicon = e.querySelector('.use-favicon');
+            .onShow(function (e) {
+                const file_select = this.querySelector('input[type=file]');
+                const logo_view = this.querySelector('.logo');
+                const icon_view = this.querySelector('div.icon');
+                const use_favicon = this.querySelector('.use-favicon');
                 if (icon !== '') {
                     icon_view.style.backgroundImage = `url(${icon})`;
                 } else {
@@ -289,45 +339,86 @@ function editSearchIcon(icon = '', logo = '', url = '', editable = true) {
     });
 }
 
-function manageSearchEngines() {
-    let innerSearchEngine = '';
+function genISEConfig({ name, url, index, disabled }, id) {
     const uniTemplate = '<dd class="${type} ${status}" data="${id}"><img class="icon" src="${icon}"> <input type="text" placeholder="名称" class="name" value="${name}" ${disabled}><input type="text" placeholder="链接, 使用\"%s\"代替搜索词" class="url" value="${url}" ${disabled}><input type="text" placeholder="首页" class="index" value="${index}" ${disabled}><span class="icon material-icon ${action}"></span> </dd>';
-    const innerTemplate = uniTemplate
+    return uniTemplate
         .replace(/\$\{disabled\}/g, 'disabled')
-        .replace(/\$\{type\}/g, 'inner');
+        .replace(/\$\{type\}/g, 'inner')
+        .replace(/\$\{icon\}/g, startProfile.getEngineIcon(id))
+        .replace(/\$\{name\}/g, name)
+        .replace(/\$\{url\}/g, url)
+        .replace(/\$\{index\}/g, index)
+        .replace(/\$\{status\}/g, disabled ? 'disabled' : 'enabled')
+        .replace(/\$\{id\}/g, id)
+        .replace(/\$\{action\}/g, disabled ? 'restore' : 'block');
+}
 
-    const customTemplate = uniTemplate
-        .replace(/\$\{disabled\}/g, '')
+function genCSEConfig({ name, url, index }, id) {
+    const uniTemplate = '<dd class="${type} ${status}" data="${id}"><img class="icon" src="${icon}"> <input type="text" placeholder="名称" class="name" value="${name}" ${disabled}><input type="text" placeholder="链接, 使用\"%s\"代替搜索词" class="url" value="${url}" ${disabled}><input type="text" placeholder="首页" class="index" value="${index}" ${disabled}><span class="icon material-icon ${action}"></span> </dd>';
+    return uniTemplate.replace(/\$\{disabled\}/g, '')
         .replace(/\$\{type\}/g, 'custom')
         .replace(/\$\{status\}/g, 'enabled')
-        .replace(/\$\{action\}/g, 'remove');
+        .replace(/\$\{action\}/g, 'remove')
+        .replace(/\$\{icon\}/g, startProfile.getEngineIcon(id))
+        .replace(/\$\{name\}/g, name)
+        .replace(/\$\{url\}/g, url)
+        .replace(/\$\{index\}/g, index)
+        .replace(/\$\{id\}/g, id);
+}
+
+function discordChanges() {
+    return new Promise((reslove, reject) => {
+        new AlertDialog()
+            .setTitle('提示')
+            .setMessage('您当前未保存的自定义搜索引擎，仍然退出吗？')
+            .setPositiveButton('确定', () => {
+                reslove('ok');
+            })
+            .setNegativeButton('取消', () => {
+                reject('canceled');
+            })
+            .setModal(true)
+            .show()
+    });
+}
+
+function manageSearchEngines() {
+    let searchEngine = '';
 
     startProfile.eachEngine((e, i) => {
         if (i < StartProfile.INNER_DIV) {
-            innerSearchEngine += innerTemplate
-                .replace(/\$\{icon\}/g, startProfile.getEngineIcon(i))
-                .replace(/\$\{name\}/g, e.name)
-                .replace(/\$\{url\}/g, e.url)
-                .replace(/\$\{index\}/g, e.index)
-                .replace(/\$\{status\}/g, e.disabled ? 'disabled' : 'enabled')
-                .replace(/\$\{id\}/g, i)
-                .replace(/\$\{action\}/g, e.disabled ? 'restore' : 'block');
+            searchEngine += genISEConfig(e, i);
         } else {
-            innerSearchEngine += customTemplate
-                .replace(/\$\{icon\}/g, startProfile.getEngineIcon(i))
-                .replace(/\$\{name\}/g, e.name)
-                .replace(/\$\{url\}/g, e.url)
-                .replace(/\$\{index\}/g, e.index)
-                .replace(/\$\{id\}/g, i);
+            searchEngine += genCSEConfig(e, i);
         }
     });
+
+    const buttonListener = function () {
+        const inputs = this.querySelectorAll('.add-item input');
+        let notsaved = false;
+        inputs.forEach(element => {
+            notsaved = notsaved || element.value !== '';
+        });
+        if (notsaved) {
+            discordChanges()
+                .then(() => {
+                    this.close();
+                })
+                .catch(() => {
+                    return true;
+                });
+            return true;
+        }
+        return false;
+    };
+
     const default_icon = 'src/image_FILL0_wght400_GRAD0_opsz24.svg';
-    const customView = `<style> .material-icon { font-family: "material-icon"; } dl {display: grid; grid-template-columns: 1fr; grid-auto-rows: 32px; gap: 4px 16px; align-items: center; padding: 0; margin: 0; gap: 4px; } .icon { width: 20px; height: 20px; user-select: none; } dd { margin: 0; display: grid; grid-template-columns: 24px .4fr 1fr .8fr 24px; gap: 8px; align-items: center; } dt { opacity: .8; font-size: .8em; padding-top: 8px; } span.icon { width: 32px; height: 32px; font-size: 20px; line-height: 32px; border-radius: 4px; text-align: center; transition: ease-in-out .2s; } span.icon:hover { background: rgba(0 0 0 / .2); } .icon.block::before { content: "\\e14b" } .icon.remove::before { content: "\\e14c" } .icon.restore::before, .icon.add::before { content: "\\e145" } .hide-disabled .disabled { display: none; } .disabled { order: 1; } .disabled > * { opacity: .6; } .disabled > .icon.restore { opacity: 1 } dt { user-select: none; pointer: default; } .hide-disabled dt::before { content: "►"; } .show-disabled dt::before { content: "▼"; } </style> <div class="hide-disabled"> <dl> ${innerSearchEngine} <dd class="add-item"> <img class="icon" src="${default_icon}"> <input type="text" placeholder="名称" class="name"><input type="text" placeholder="链接, 使用 &quot;%s&quot; 代替搜索词" class="url" value=""><input type="text" placeholder="首页" class="index" value=""><span class="icon material-icon add"></span></dd> <dt> 已禁用</dt> </dl> </div>`;
+    const customView = `<style> .material-icon { font-family: "material-icon"; } dl {display: grid; grid-template-columns: 1fr; grid-auto-rows: 32px; gap: 4px 16px; align-items: center; padding: 0; margin: 0; gap: 4px; } .icon { width: 20px; height: 20px; user-select: none; } dd { margin: 0; display: grid; grid-template-columns: 24px .4fr 1fr .8fr 24px; gap: 8px; align-items: center; } dt { opacity: .8; font-size: .8em; padding-top: 8px; } span.icon { width: 32px; height: 32px; font-size: 20px; line-height: 32px; border-radius: 4px; text-align: center; transition: ease-in-out .2s; } span.icon:hover { background: rgba(0 0 0 / .2); } .icon.block::before { content: "\\e14b" } .icon.remove::before { content: "\\e14c" } .icon.restore::before, .icon.add::before { content: "\\e145" } .hide-disabled .disabled { display: none; } .disabled { order: 1; } .disabled > * { opacity: .6; } .disabled > .icon.restore { opacity: 1 } dt { user-select: none; pointer: default; } .hide-disabled dt::before { content: "►"; } .show-disabled dt::before { content: "▼"; } </style> <div class="hide-disabled"> <dl> ${searchEngine} <dd class="add-item"> <img class="icon" src="${default_icon}"> <input type="text" placeholder="名称" class="name"><input type="text" placeholder="链接, 使用 &quot;%s&quot; 代替搜索词" class="url" value=""><input type="text" placeholder="首页" class="index" value=""><span class="icon material-icon add"></span></dd> <dt> 已禁用</dt> </dl> </div>`;
     new AlertDialog()
         .setTitle('管理搜索引擎')
         .setView(customView)
-        .setPositiveButton('确定')
-        .setNegativeButton('关闭')
+        .setPositiveButton('确定', buttonListener)
+        .setNegativeButton('关闭', buttonListener)
         .setModal(true)
         .onShow(function (view) {
             const list = view.querySelector('div');
@@ -390,20 +481,16 @@ function manageSearchEngines() {
                         alertMessage('链接不包含搜索词, 请检查');
                         return;
                     };
-                    const id = startProfile.addCustomSearchEngine({
+                    const engineConfig = {
                         name: name,
                         icon: icon,
                         logo: logo ?? '',
                         url: url,
                         index: index,
-                    });
+                    };
+                    const id = startProfile.addCustomSearchEngine(engineConfig);
                     const new_item = document.createElement('div');
-                    new_item.innerHTML = customTemplate
-                        .replace(/\$\{icon\}/g, startProfile.getEngineIcon(id))
-                        .replace(/\$\{name\}/g, name)
-                        .replace(/\$\{url\}/g, url)
-                        .replace(/\$\{index\}/g, index)
-                        .replace(/\$\{id\}/g, id)
+                    new_item.innerHTML = genCSEConfig(engineConfig, id)
                     item.before(new_item.children[0]);
                     img_el.src = default_icon;
                     img_el.data = undefined;
@@ -436,11 +523,19 @@ function manageSearchEngines() {
                     }
                 }
             });
-
         })
         .onClose(() => {
             modifyActivatedSearchEngine();
         })
+        .show();
+};
+
+function manageConfigs() {
+    new AlertDialog()
+        .setTitle('设置')
+        .setMessage('施工中，请等待后续更新')
+        .setPositiveButton('确定')
+        .setNegativeButton('关闭')
         .show()
 }
 
@@ -483,7 +578,7 @@ SEARCH_BUTTON.addEventListener('click', e => {
     e.preventDefault();
 });
 
-app.addEventListener('click', e => {
+app.addEventListener('click', () => {
     showSearchEngineSelect(false);
 });
 
@@ -530,3 +625,38 @@ SHORTCUTS_COLLECTION_CONTAINER.addEventListener('drop', e => {
     container.saveLinks();
     e.preventDefault();
 });
+
+function expandMoreLinks() {
+    let deltaY = 0;
+    let timer = 0;
+    const appRoot = document.querySelector('#app');
+    document.addEventListener('mousewheel', e => {
+        deltaY += e.deltaY;
+        if (deltaY >= 200) {
+            if (appRoot.classList.contains('expand')) {
+                customShortcutsCollection.currentPage += 1;
+            } else {
+                customShortcutsCollection.refreshPageIndicator();
+                setTimeout(() => {
+                    appRoot.classList.add('expand');
+                }, 50);
+            }
+        } else if (deltaY <= -200) {
+            if (appRoot.classList.contains('expand')) {
+                if (customShortcutsCollection.currentPage === 0) {
+                    appRoot.classList.remove('expand');
+                } else {
+                    customShortcutsCollection.currentPage -= 1;
+                }
+            }
+        };
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            deltaY = 0;
+        }, 200);
+    });
+}
+expandMoreLinks();
+document.querySelector('.search-box input').focus();
+
+document.querySelector('.settings .icon').addEventListener('click', manageConfigs);
