@@ -98,7 +98,7 @@ class CustomShortcutsCollection extends ShortcutCollections {
         return val;
     };
     editAddDialog(onsuccess = undefined, name = '', url = '', icon = undefined, desc = '') {
-        const customView = `<style>div {display: grid; grid-template-columns: 72px 1fr; grid-template-rows: repeat(3, 32px); grid-template-areas: "i n" "i u" "i d"; gap: 4px 16px; align-items: center; } .icon { grid-area: i; width: 72px; height: 72px; background: rgba(0 0 0 / .1); } </style> <div> <img class="icon" src="src/image_FILL0_wght400_GRAD0_opsz24.svg"> <input type="file" style="display: none;" class="icon" accept="image/*"> <input type="text" placeholder="名称" class="name"><input type="text" placeholder="链接" class="url"><input type="text" placeholder="描述" class="desc"></div>`;
+        const customView = `<style>div {display: grid; grid-template-columns: 96px 1fr; grid-template-rows: repeat(3, 32px); grid-template-areas: "i n" "i u" "i d"; gap: 12px; align-items: center; } .icon { grid-area: i; width: 96px; height: 96px; background: rgba(0 0 0 / .1); object-fit: contain; border-radius: 8px; padding: 8px; box-sizing: border-box;} </style> <div> <img class="icon" src="src/image_FILL0_wght400_GRAD0_opsz24.svg"> <input type="file" style="display: none;" class="icon" accept="image/*"> <input type="text" placeholder="名称" class="name"><input type="text" placeholder="链接" class="url"><input type="text" placeholder="描述" class="desc"></div>`;
         const collection = this;
         const dialog = new AlertDialog()
             .setTitle('添加')
@@ -216,19 +216,30 @@ async function getPrimaryColor(image) {
     });
 }
 
-document.documentElement.style.backgroundImage = `url(${STATIC_SOURCE.WALLPAPER})`;
-getPrimaryColor(STATIC_SOURCE.WALLPAPER)
-    .then(e => {
-        document.documentElement.style.backgroundColor = `rgb(${e.r}, ${e.g}, ${e.b})`;
-    });
+function setWallpaper(wallpaper) {
+    document.querySelector('.wallpaper').style.backgroundImage = `url(${wallpaper})`;
+    getPrimaryColor(wallpaper)
+        .then(e => {
+            document.documentElement.style.backgroundColor = `rgb(${e.r}, ${e.g}, ${e.b})`;
+        });
+};
+setWallpaper(STATIC_SOURCE.WALLPAPER);
+
+function modifySearchEngine(id) {
+    SEARCH_ENGINE.style.backgroundImage = `url(${startProfile.getEngineIcon(id)})`;
+    const logo = document.querySelector('.search-logo');
+    logo.classList.add('modifying');
+    setTimeout(() => {
+        logo.style.backgroundImage = `url(${startProfile.getEngineLogo(id)})`;
+    }, 300);
+    setTimeout(() => {
+        logo.classList.remove('modifying');
+    }, 600);
+    startProfile.SearchEngine = id;
+}
 
 modifySearchEngine(startProfile.SearchEngine);
 
-function modifySearchEngine(id) {
-    startProfile.SearchEngine = id;
-    SEARCH_ENGINE.style.backgroundImage = `url(${startProfile.getEngineIcon(id)})`;
-    document.querySelector('.search-logo').style.backgroundImage = `url(${startProfile.getEngineLogo(id)})`;
-}
 function modifyActivatedSearchEngine() {
     ActivatedSearchEngine.splice(0);
     for (const i = 1; SEARCH_ENGINE_SELECT.children.length > 2;) {
@@ -413,7 +424,7 @@ function manageSearchEngines() {
     };
 
     const default_icon = 'src/image_FILL0_wght400_GRAD0_opsz24.svg';
-    const customView = `<style> .material-icon { font-family: "material-icon"; } dl {display: grid; grid-template-columns: 1fr; grid-auto-rows: 32px; gap: 4px 16px; align-items: center; padding: 0; margin: 0; gap: 4px; } .icon { width: 20px; height: 20px; user-select: none; } dd { margin: 0; display: grid; grid-template-columns: 24px .4fr 1fr .8fr 24px; gap: 8px; align-items: center; } dt { opacity: .8; font-size: .8em; padding-top: 8px; } span.icon { width: 32px; height: 32px; font-size: 20px; line-height: 32px; border-radius: 4px; text-align: center; transition: ease-in-out .2s; } span.icon:hover { background: rgba(0 0 0 / .2); } .icon.block::before { content: "\\e14b" } .icon.remove::before { content: "\\e14c" } .icon.restore::before, .icon.add::before { content: "\\e145" } .hide-disabled .disabled { display: none; } .disabled { order: 1; } .disabled > * { opacity: .6; } .disabled > .icon.restore { opacity: 1 } dt { user-select: none; pointer: default; } .hide-disabled dt::before { content: "►"; } .show-disabled dt::before { content: "▼"; } </style> <div class="hide-disabled"> <dl> ${searchEngine} <dd class="add-item"> <img class="icon" src="${default_icon}"> <input type="text" placeholder="名称" class="name"><input type="text" placeholder="链接, 使用 &quot;%s&quot; 代替搜索词" class="url" value=""><input type="text" placeholder="首页" class="index" value=""><span class="icon material-icon add"></span></dd> <dt> 已禁用</dt> </dl> </div>`;
+    const customView = `<style> .material-icon { font-family: "material-icon"; } dl {display: grid; grid-template-columns: 1fr; grid-auto-rows: 32px; gap: 8px; align-items: center; padding: 0; margin: 0; } .icon { width: 20px; height: 20px; user-select: none; } dd { margin: 0; display: grid; grid-template-columns: 24px .4fr 1fr .8fr 24px; gap: 8px; align-items: center; } dt { opacity: .8; font-size: .8em; padding-top: 8px; } span.icon { width: 32px; height: 32px; font-size: 20px; line-height: 32px; border-radius: 4px; text-align: center; transition: ease-in-out .2s; } span.icon:hover { background: rgba(0 0 0 / .2); } .icon.block::before { content: "\\e14b" } .icon.remove::before { content: "\\e14c" } .icon.restore::before, .icon.add::before { content: "\\e145" } .hide-disabled .disabled { display: none; } .disabled { order: 1; } .disabled > * { opacity: .6; } .disabled > .icon.restore { opacity: 1 } dt { user-select: none; pointer: default; } .hide-disabled dt::before { content: "►"; } .show-disabled dt::before { content: "▼"; } </style> <div class="hide-disabled"> <dl> ${searchEngine} <dd class="add-item"> <img class="icon" src="${default_icon}"> <input type="text" placeholder="名称" class="name"><input type="text" placeholder="链接, 使用 &quot;%s&quot; 代替搜索词" class="url" value=""><input type="text" placeholder="首页" class="index" value=""><span class="icon material-icon add"></span></dd> <dt> 已禁用</dt> </dl> </div>`;
     new AlertDialog()
         .setTitle('管理搜索引擎')
         .setView(customView)
@@ -626,25 +637,58 @@ SHORTCUTS_COLLECTION_CONTAINER.addEventListener('drop', e => {
     e.preventDefault();
 });
 
+class PagesIndicatorStatus {
+    pagesIndicator = document.querySelector('.pages-indicator');
+    hideTimer = 0;
+    constructor() {
+        const indicator = this;
+        this.hide();
+        this.pagesIndicator.addEventListener('mouseenter', () => {
+            indicator.show();
+        });
+    };
+    autoHide() {
+        const indicator = this;
+        clearTimeout(this.hideTimer);
+        this.hideTimer = setTimeout(() => {
+            indicator.hide();
+        }, 3000);
+    };
+    show() {
+        this.pagesIndicator.style.filter = 'opacity(1)';
+        this.autoHide();
+    };
+    hide() {
+        clearTimeout(this.hideTimer)
+        this.pagesIndicator.style.filter = 'opacity(0)';
+    }
+};
+const pagesIndicatorStatus = new PagesIndicatorStatus();
+
 function expandMoreLinks() {
     let deltaY = 0;
     let timer = 0;
     const appRoot = document.querySelector('#app');
     document.addEventListener('mousewheel', e => {
         deltaY += e.deltaY;
+        if (appRoot.classList.contains('expand')) {
+            pagesIndicatorStatus.show();
+        };
         if (deltaY >= 200) {
             if (appRoot.classList.contains('expand')) {
                 customShortcutsCollection.currentPage += 1;
             } else {
                 customShortcutsCollection.refreshPageIndicator();
                 setTimeout(() => {
+                    showSearchEngineSelect(false);
                     appRoot.classList.add('expand');
                 }, 50);
-            }
+            };
         } else if (deltaY <= -200) {
             if (appRoot.classList.contains('expand')) {
                 if (customShortcutsCollection.currentPage === 0) {
                     appRoot.classList.remove('expand');
+                    pagesIndicatorStatus.hide();
                 } else {
                     customShortcutsCollection.currentPage -= 1;
                 }
@@ -655,7 +699,8 @@ function expandMoreLinks() {
             deltaY = 0;
         }, 200);
     });
-}
+};
+
 expandMoreLinks();
 document.querySelector('.search-box input').focus();
 

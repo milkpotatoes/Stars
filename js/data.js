@@ -190,6 +190,7 @@ export class ShortcutCollections {
 
 export class StartProfile {
     static INNER_DIV = 64;
+    BLANK_IMAGE;
     INNER_SEARCH_ENGINES = SEARCH_ENGINES;
     CustomSearchEngine = [];
     getSearchEngine(id = this.SearchEngine) {
@@ -212,7 +213,7 @@ export class StartProfile {
         if (id < StartProfile.INNER_DIV) {
             return STATIC_SOURCE[engine.logo];
         } else {
-            return engine.logo;
+            return engine.logo === '' ? this.BLANK_IMAGE : engine.logo;
         }
     }
 
@@ -252,7 +253,7 @@ export class StartProfile {
         this.saveDisanledSearchEngine();
     };
     enableInnerEngine(id) {
-        const loc = this.DisabledSearchEngine.includes(id)
+        const loc = this.DisabledSearchEngine.indexOf(id);
         if (loc >= 0 && id < this.INNER_SEARCH_ENGINES.length) {
             this.DisabledSearchEngine.splice(loc, 1);
             this.saveDisanledSearchEngine();
@@ -293,6 +294,12 @@ export class StartProfile {
 
     ShortcutLinks = [];
     constructor() {
+        const cav = document.createElement('canvas');
+        cav.width = 1;
+        cav.height = 1;
+
+        this.BLANK_IMAGE = cav.toDataURL();
+
         if (localStorage.DisabledSearchEngine !== undefined) {
             try {
                 this.DisabledSearchEngine = JSON.parse(localStorage.DisabledSearchEngine);
