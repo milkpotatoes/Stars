@@ -60,13 +60,12 @@ class CustomShortcutsCollection extends ShortcutCollections {
             };
         });
     };
-    refreshPageIndicator() {
+    refreshPageIndicator(pages = this.pagesCount) {
         const pagesIndicator = this._elm.querySelector('.pages-indicator');
         const indicators = pagesIndicator.querySelectorAll('.page-indicator');
         indicators.forEach(element => {
             element.remove();
         });
-        const pages = this.pagesCount;
         for (let i = 0; i < pages; i++) {
             const indicator = document.createElement('div');
             indicator.classList.add('page-indicator');
@@ -191,7 +190,30 @@ class CustomShortcutsCollection extends ShortcutCollections {
             icon: 'src/start-512x512.png',
             desc: '个性化新建标签页',
         };
-    }
+    };
+    filter(key = '') {
+        if (key === '') {
+            this._shortcutCollections.forEach(e => {
+                e.elm.style.display = '';
+            });
+            this.refreshPageIndicator();
+        } else {
+            const searchKey = new RegExp(key.split('').join('(.+?)?'), 'g');
+            let result_count = 0;
+            this._shortcutCollections.forEach(e => {
+                if (e._name.match(searchKey) !== null ||
+                    e.url.match(key) !== null ||
+                    e._desc.match(searchKey) !== null
+                ) {
+                    result_count++;
+                    e.elm.style.display = '';
+                } else {
+                    e.elm.style.display = 'none';
+                };
+                this.refreshPageIndicator(Math.ceil(result_count / CustomShortcutsCollection.PAGE_SIZE));
+            });
+        };
+    };
 }
 
 const SEARCH_ENGINE = document.querySelector('.search-icon');
@@ -202,7 +224,8 @@ const SEARCH_ENGINE_LOGO = document.querySelector('.search-logo');
 const SEARCH_BUTTON = document.querySelector('.search-button');
 const SEARCH_INPUT = document.querySelector('#search-key');
 const startProfile = new StartProfile();
-const SHORTCUTS_COLLECTION_CONTAINER = document.querySelector('.shortcuts')
+const SHORTCUTS_COLLECTION_CONTAINER = document.querySelector('.shortcuts');
+const SHORTCUT_FILTER = document.querySelector('.shortcut-filter');
 const customShortcutsCollection = new CustomShortcutsCollection(SHORTCUTS_COLLECTION_CONTAINER);
 const ActivatedSearchEngine = [];
 
@@ -272,7 +295,7 @@ function showSearchEngineSelect(show = false) {
         }, 200);
     } else if (show >= 0 && order < startProfile.getEngineCount()) {
         SEARCH_ENGINE_SELECT.style.display = 'grid';
-        SEARCH_ENGINE_SELECT.style.transform = `translate(0, -${(order + 1) * 40}px)`;
+        SEARCH_ENGINE_SELECT.style.transform = `translate(0, -${(order) * 40}px)`;
         setTimeout(() => {
             SEARCH_ENGINE_SELECT.classList.remove('hidden');
         }, 50);
@@ -646,6 +669,11 @@ class PagesIndicatorStatus {
         this.pagesIndicator.addEventListener('mouseenter', () => {
             indicator.show();
         });
+        const launcherRight = SHORTCUTS_COLLECTION_CONTAINER.getClientRects()[0].right;
+        const selfX = this.pagesIndicator.getClientRects()[0].left;
+        if (selfX >= launcherRight) {
+            this.pagesIndicator.style.margin = '-24px';
+        };
     };
     autoHide() {
         const indicator = this;
@@ -657,49 +685,142 @@ class PagesIndicatorStatus {
     show() {
         this.pagesIndicator.style.filter = 'opacity(1)';
         this.autoHide();
+        if (customShortcutsCollection.pagesCount === 1) {
+            this.forceHide();
+        } else {
+            this.forceHide(false);
+        }
     };
+    forceHide(hide = true) {
+        if (hide) {
+            this.pagesIndicator.style.display = 'none';
+        } else {
+            this.pagesIndicator.style.display = '';
+        }
+    }
     hide() {
         clearTimeout(this.hideTimer)
         this.pagesIndicator.style.filter = 'opacity(0)';
-    }
+    };
 };
 const pagesIndicatorStatus = new PagesIndicatorStatus();
+
+function expandShortcuts(expand = true) {
+    const appRoot = document.querySelector('#app');
+
+    SHORTCUT_FILTER.querySelector('input').value = '';
+    customShortcutsCollection.filter();
+    customShortcutsCollection.refreshPageIndicator();
+    SHORTCUTS_COLLECTION_CONTAINER.style.transition = '';
+    SHORTCUT_FILTER.style.transition = '';
+    if (expand) {
+        setTimeout(() => {
+            showSearchEngineSelect(false);
+            appRoot.classList.add('expand');
+        }, 50);
+    } else {
+        appRoot.classList.remove('expand');
+        pagesIndicatorStatus.hide();
+    };
+};
+
+function stretchingShortcuts() {
+    SHORTCUTS_COLLECTION_CONTAINER.style.transition = 'ease-in-out .2s';
+    SHORTCUT_FILTER.style.transition = 'ease-in-out .2s';
+    SHORTCUTS_COLLECTION_CONTAINER.style.marginBottom = '20px';
+    SHORTCUTS_COLLECTION_CONTAINER.style.padding = '34px 24px';
+    SHORTCUT_FILTER.style.transform = 'translate(0, -20px)';
+    return setTimeout(() => {
+        SHORTCUT_FILTER.style.transform = '';
+        SHORTCUTS_COLLECTION_CONTAINER.style.marginBottom = '';
+        SHORTCUTS_COLLECTION_CONTAINER.style.padding = '';
+        setTimeout(() => {
+            SHORTCUTS_COLLECTION_CONTAINER.style.transition = '';
+            SHORTCUT_FILTER.style.transition = '';
+        }, 200);
+    }, 200);
+}
 
 function expandMoreLinks() {
     let deltaY = 0;
     let timer = 0;
+    let scroll_bottom = 0;
+    let executing = false;
     const appRoot = document.querySelector('#app');
-    document.addEventListener('mousewheel', e => {
-        deltaY += e.deltaY;
+    const mouseWhellEvent = (y) => {
+        deltaY += y;
         if (appRoot.classList.contains('expand')) {
             pagesIndicatorStatus.show();
         };
+        if (executing) {
+            setTimeout(() => {
+                executing = false;
+            }, 200);
+            return;
+        };
+        clearTimeout(timer);
+        clearTimeout(scroll_bottom);
         if (deltaY >= 200) {
             if (appRoot.classList.contains('expand')) {
-                customShortcutsCollection.currentPage += 1;
-            } else {
-                customShortcutsCollection.refreshPageIndicator();
+                if (customShortcutsCollection.currentPage === customShortcutsCollection.pagesCount - 1) {
+                    scroll_bottom = stretchingShortcuts();
+                } else {
+                    customShortcutsCollection.currentPage += 1;
+                }
                 setTimeout(() => {
-                    showSearchEngineSelect(false);
-                    appRoot.classList.add('expand');
-                }, 50);
+                    executing = false;
+                }, 200);
+            } else {
+                expandShortcuts();
+
+                setTimeout(() => {
+                    executing = false;
+                }, 500);
             };
+            executing = true;
         } else if (deltaY <= -200) {
             if (appRoot.classList.contains('expand')) {
                 if (customShortcutsCollection.currentPage === 0) {
-                    appRoot.classList.remove('expand');
-                    pagesIndicatorStatus.hide();
+                    expandShortcuts(false);
+                    setTimeout(() => {
+                        executing = false;
+                    }, 500);
                 } else {
                     customShortcutsCollection.currentPage -= 1;
+                    setTimeout(() => {
+                        executing = false;
+                    }, 200);
                 }
             }
+            executing = true;
         };
-        clearTimeout(timer);
         timer = setTimeout(() => {
             deltaY = 0;
         }, 200);
-    });
+    };
+    appRoot.addEventListener('mousewheel', e => { mouseWhellEvent(e.deltaY) });
+    appRoot.addEventListener('DOMMouseScroll', e => { mouseWhellEvent(e.detail * 50) });
 };
+
+SHORTCUT_FILTER.querySelector('input').addEventListener('input', e => {
+    customShortcutsCollection.filter(e.target.value);
+});
+
+SEARCH_INPUT.addEventListener('input', e => {
+    const search_key = e.target.value.match(/@link (.+)?$/);
+    if (search_key !== null) {
+        customShortcutsCollection.filter(search_key[1] ?? '');
+    }
+});
+
+document.addEventListener('keydown', e => {
+    if (document.getElementById('app').classList.contains('expand')) {
+        if (e.altKey && e.code === 'KeyS') {
+            SHORTCUT_FILTER.querySelector('input').focus();
+            e.preventDefault();
+        }
+    }
+});
 
 expandMoreLinks();
 document.querySelector('.search-box input').focus();

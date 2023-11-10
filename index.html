@@ -16,17 +16,12 @@
         <div class="BING_LOGO"></div>
         <div class="BING_ICON"></div>
     </div>
-    <div id="app" class="collapse">
+    <div id="app">
         <div class="settings">
-            <span class="icon materical-icon">&#xe8b8;</span>
+            <span class="icon material-icon">&#xe8b8;</span>
         </div>
         <div class="search-box">
             <div class="search-logo"></div>
-            <form class="search-input blur" action="" method="">
-                <div class="search-icon"></div>
-                <input id="search-key" type="search" placeholder="搜索..."></input>
-                <button class="search-button" type="submit">搜索</button>
-            </form>
             <div class="search-select hidden blur">
                 <template>
                     <div>
@@ -35,27 +30,45 @@
                     </div>
                 </template>
                 <div class="manage-search-engine">
-                    <span class="icon materical-icon">&#xe8b8;</span>
+                    <span class="icon material-icon">&#xe8b8;</span>
                     <span class="name">管理搜索引擎</span>
                 </div>
             </div>
+            <form class="search-input blur" action="" method="">
+                <div class="search-icon"></div>
+                <input id="search-key" type="search" autocomplete="off" placeholder="搜索..."></input>
+                <button class="search-button" type="submit">搜索</button>
+                <div class="search-help">
+                    <div>输入<span>@links 关键词</span>搜索快速链接</div>
+                    <div>输入<span>/关键词</span>指定搜索引擎</div>
+                </div>
+                <div class="search-command hidden">
+                    <template class="engine"></template>
+                    <template class="command"></template>
+                </div>
+                <div class="search-history hidden"></div>
+            </form>
+        </div>
+        <div class="shortcut-filter">
+            <div class="material-icon">&#xe8b6;</div>
+            <input type="text" name="" id="" placeholder="搜索 (Alt + S)">
         </div>
         <div class="shortcuts">
             <template>
                 <div class="shortcut">
                     <span class="indicator"></span>
-                    <span class="icon"></span>
+                    <img class="icon" draggable="false" />
                     <div class="banner">
                         <span class="name"></span>
                         <div class="action">
-                            <span class="edit materical-icon">&#xe3c9;</span>
-                            <span class="delete materical-icon">&#xe5cd;</span>
+                            <span class="edit material-icon">&#xe3c9;</span>
+                            <span class="delete material-icon">&#xe5cd;</span>
                         </div>
                     </div>
                 </div>
             </template>
             <div class="shortcut add-shortcut">
-                <span class="icon materical-icon">&#xe145;</span>
+                <span class="icon material-icon">&#xe145;</span>
                 <div class="banner">
                     <span class="name">添加</span>
                 </div>

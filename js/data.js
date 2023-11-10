@@ -20,7 +20,7 @@ export class Shortcut {
     };
     set icon(value) {
         this._icon = value;
-        this.elm.querySelector('.icon').style.backgroundImage = `url(${value})`;
+        this.elm.querySelector('img.icon').src = value;
     };
     get desc() {
         return this._desc;
@@ -93,11 +93,27 @@ export class Shortcut {
     }
 
     setDragEvent() {
+        const dragImg = new Image(48, 48);
+        dragImg.style.objectFit = 'contain';
+        const dragIcon = document.createElement('canvas');
+        dragIcon.height = 48;
+        dragIcon.width = 48;
+        const ctx = dragIcon.getContext('2d');
+        dragImg.onload = () => {
+            ctx.drawImage(dragImg, 0, 0, 48, 48);
+        };
+        dragImg.src = this._icon;
+
         this.elm.addEventListener('dragstart', function (e) {
             e.dataTransfer.setData('text/uri-list', this.url);
             e.dataTransfer.setData('text/plain', `${this._name} ${this.url}`);
+            dragIcon.style.top = '100%';
+            document.body.append(dragIcon)
+            dragIcon.style.position = 'fixed';
+            e.dataTransfer.setDragImage(dragIcon, 0, 0);
             setTimeout(() => {
                 this.elm.classList.add('dragging');
+                dragIcon.remove();
             }, 50);
             e.dataTransfer.effectAllowed = 'all';
         }.bind(this));
