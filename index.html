@@ -36,11 +36,13 @@
             </div>
             <form class="search-input blur" action="" method="">
                 <div class="search-icon"></div>
-                <input id="search-key" type="search" autocomplete="off" placeholder="搜索..."></input>
+                <input id="search-key" type="search" autocomplete="off" placeholder="搜索..." />
                 <button class="search-button" type="submit">搜索</button>
-                <div class="search-help">
-                    <div>输入<span>@links 关键词</span>搜索快速链接</div>
-                    <div>输入<span>/关键词</span>指定搜索引擎</div>
+                <div class="search-help hidden">
+                    <div data="@links ">输入<span>@links</span>搜索快速链接</div>
+                    <div data="/">输入<span>/关键词</span>指定搜索引擎</div>
+                    <div data="">输入<span>?</span>查看帮助</div>
+                    <div data="#">输入<span>#</span>查看历史记录</div>
                 </div>
                 <div class="search-command hidden">
                     <template class="engine"></template>

@@ -1,4 +1,4 @@
-import { SEARCH_ENGINES, STATIC_SOURCE } from "./resource.js";
+import { SEARCH_ENGINES, STATIC_SOURCE } from "../resource.js";
 
 export class Shortcut {
     url;
@@ -234,6 +234,10 @@ export class StartProfile {
     }
 
     _SearchEngine = 0;
+    _DefaultEngine = this._SearchEngine;
+    get DefaultEngine() {
+        return this._DefaultEngine;
+    }
     get SearchEngine() {
         return this._SearchEngine;
     };
@@ -241,8 +245,12 @@ export class StartProfile {
         if (isNaN(engine_id) | !this.getSearchEngine(engine_id)) {
             engine_id = 0;
         }
-        localStorage.SearchEngine = engine_id;
         this._SearchEngine = engine_id;
+    };
+    modifyDefaultEngine(engine_id) {
+        this.SearchEngine = engine_id;
+        this._DefaultEngine = this.SearchEngine;
+        localStorage.SearchEngine = engine_id;
     };
 
     DisabledSearchEngine = [];
@@ -275,8 +283,11 @@ export class StartProfile {
             this.saveDisanledSearchEngine();
         }
     }
-    eachEngine(callback) {
+    eachEngine(callback, showDisabled = true) {
         this.INNER_SEARCH_ENGINES.forEach((e, i) => {
+            if (!showDisabled && this.DisabledSearchEngine.includes(i)) {
+                return;
+            }
             callback(e, i);
         });
         this.CustomSearchEngine.forEach((e, i) => {
@@ -292,6 +303,7 @@ export class StartProfile {
             this.saveCustomSearchEngine();
             return this.CustomSearchEngine.length - 1 + StartProfile.INNER_DIV;
         };
+        return null;
     };
     removeCustomSearchEngine(id) {
         if (id >= StartProfile.INNER_DIV) {
@@ -348,10 +360,82 @@ export class StartProfile {
             try {
                 this.SearchEngine = parseInt(localStorage.SearchEngine);
             } catch {
-                this.SearchEngine = 0;
+                this.modifyDefaultEngine(0);
             }
         } else {
-            this.SearchEngine = 0;
+            this.modifyDefaultEngine(0);
+        }
+        this._DefaultEngine = this.SearchEngine;
+    }
+}
+
+export class SearchHistory {
+    searchHistory = [];
+    constructor() {
+        this.loadHistory();
+    }
+    loadHistory() {
+        if (localStorage.SearchHistory !== undefined) {
+            try {
+                this.searchHistory = JSON.parse(localStorage.SearchHistory);
+            } catch {
+                this.saveHistory();
+            }
+        } else {
+            this.saveHistory();
+        }
+    }
+    saveHistory() {
+        localStorage.SearchHistory = JSON.stringify(this.searchHistory);
+    }
+    recordHistory(record) {
+        const includes = false;
+        for (let i = 0; i < this.searchHistory.length; i++) {
+            const record = this.searchHistory[i];
+            if (record.key === key) {
+                includes = true;
+                break
+            }
+        }
+        if (!includes) {
+            this.searchHistory.push({
+                key: record,
+                time: new Date().getTime()
+            });
+            this.saveHistory();
+        }
+    }
+    filterHistory(key) {
+        return this.searchHistory.filter(val => {
+            return val.match(key) !== null;
+        });
+    }
+    deleteHistory(key) {
+        const removeList = [];
+        this.forEach((record, index) => {
+            if (record.key === key) {
+                removeList.push(index);
+                return true;
+            } else {
+                return false
+            }
+        });
+        removeList.forEach(index => {
+            this.searchHistory.splice(index, 1);
+            this.saveHistory();
+
+        });
+    }
+    clearHistory() {
+        this.searchHistory = [];
+        this.saveHistory();
+    }
+    forEach(callback) {
+        if (typeof callback !== 'function') {
+            return
+        }
+        for (let i = 0; i < this.searchHistory.length && i < 16; i++) {
+            callback(this.searchHistory[i], i);
         }
     }
 }

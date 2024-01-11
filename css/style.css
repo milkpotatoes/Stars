@@ -142,7 +142,7 @@ html,
 .search-input {
     display: grid;
     grid-template-rows: 40px 1fr;
-    grid-template-columns: 32px 1fr 84px;
+    grid-template-columns: 32px 1fr 12px;
     background: rgba(0 0 0 / .06);
     width: 100%;
     min-height: 40px;
@@ -151,6 +151,19 @@ html,
     border-radius: 20px;
     box-sizing: border-box;
     position: absolute;
+    z-index: 1;
+    box-shadow: 0 4px 16px 0px -16px rgba(0 0 0 / .3);
+    transition: ease-in-out .2s;
+}
+
+.search-input:focus-within {
+    background-color: rgba(0 0 0 / .25);
+    box-shadow: 0 4px 16px 0px rgba(0 0 0 / .3);
+}
+
+
+.search-input:focus-within>input::placeholder {
+    color: rgba(255 255 255 / .5);
 }
 
 .search-input>button,
@@ -163,6 +176,7 @@ html,
 }
 
 .search-input>button {
+    display: none;
     width: 80px;
     border-radius: 20px;
     height: 32px;
@@ -192,7 +206,7 @@ html,
     display: none;
     grid-auto-rows: 40px;
     grid-auto-columns: 156px;
-    z-index: 1;
+    z-index: 2;
 }
 
 .search-select.hidden {
@@ -438,7 +452,6 @@ html,
 
 .search-box>.search-input {
     filter: opacity(1);
-    z-index: 1;
 }
 
 #app.expand .search-box>.search-logo,
@@ -629,11 +642,25 @@ html,
     transition: .2s ease-in-out;
 }
 
+.search-history>div {
+    padding: 0 12px;
+}
+
+.search-command>.focus,
+.search-help>.focus,
+.search-history>.focus {
+    background: rgba(0 0 0 / .16) !important;
+}
+
 .search-command>div:hover,
 .search-help>div:hover,
 .search-history>div:hover {
     background: rgba(0 0 0 / .1);
 }
+
+.search-command>div::after,
+.search-help>div::after,
+.search-history>div::after,
 .search-command>div>span,
 .search-help>div>span,
 .search-history>div>span {
@@ -641,4 +668,19 @@ html,
     padding: 2px 4px;
     border-radius: 4px;
     margin: 0 4px;
+}
+
+.search-command>div::after,
+.search-help>div::after,
+.search-history>div::after {
+    content: "Tab";
+    margin-left: 1em;
+    opacity: 0;
+    transition: .2s ease-in-out;
+}
+
+.search-command>.focus::after,
+.search-help>.focus::after,
+.search-history>.focus::after {
+    opacity: 1;
 }
