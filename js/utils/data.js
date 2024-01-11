@@ -391,8 +391,8 @@ export class SearchHistory {
     recordHistory(record) {
         const includes = false;
         for (let i = 0; i < this.searchHistory.length; i++) {
-            const record = this.searchHistory[i];
-            if (record.key === key) {
+            const history = this.searchHistory[i];
+            if (history.key === record) {
                 includes = true;
                 break
             }
