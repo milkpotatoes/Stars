@@ -47,7 +47,7 @@ export const SEARCH_ENGINES = [
     {
         name: 'DuckDuckGo',
         index: 'https://duckduckgo.com/',
-        url: 'https://www.wuzhuiso.com/s?ie=utf-8&q=%s',
+        url: 'https://duckduckgo.com/?t=h_&q=%s',
         logo: 'DUCKDUCKGO_LOGO',
         icon: 'DUCKDUCKGO_ICON',
     },
