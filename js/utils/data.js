@@ -389,7 +389,7 @@ export class SearchHistory {
         localStorage.SearchHistory = JSON.stringify(this.searchHistory);
     }
     recordHistory(record) {
-        const includes = false;
+        let includes = false;
         for (let i = 0; i < this.searchHistory.length; i++) {
             const history = this.searchHistory[i];
             if (history.key === record) {
