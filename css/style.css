@@ -347,6 +347,7 @@ html,
     align-items: center;
     -webkit-user-select: none;
     user-select: none;
+    object-fit: contain;
 }
 
 .shortcut .banner {
