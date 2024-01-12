@@ -1,5 +1,6 @@
 import { ShortcutCollections } from "./utils/data.js";
 import { AlertDialog } from "./utils/alertdialog.js";
+import { fileToBase64 } from "./utils/utils.js";
 
 export class CustomShortcutsCollection extends ShortcutCollections {
     static PAGE_SIZE = 40;
@@ -135,7 +136,7 @@ export class CustomShortcutsCollection extends ShortcutCollections {
         file_select.addEventListener('change', (e) => {
             const files = e.target.files;
             if (files.length > 0) {
-                CustomShortcutsCollection.fileToBase64(files[0])
+                fileToBase64(files[0])
                     .then(base64 => {
                         preview.src = base64;
                     });
