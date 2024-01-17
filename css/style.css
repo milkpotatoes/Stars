@@ -613,7 +613,7 @@ html,
 
 .search-command.hidden>div,
 .search-help.hidden>div,
-.search-history.hidden>div{
+.search-history.hidden>div {
     height: 0;
 }
 
@@ -669,11 +669,13 @@ html,
     padding: 2px 4px;
     border-radius: 4px;
     margin: 0 4px;
+    line-height: 1.3em;
 }
 
 .search-command>div::after,
 .search-help>div::after,
-.search-history>div::after {
+.search-history>div::after,
+.search-history>div>.delete {
     content: "Tab";
     margin-left: 1em;
     opacity: 0;
@@ -682,6 +684,28 @@ html,
 
 .search-command>.focus::after,
 .search-help>.focus::after,
-.search-history>.focus::after {
+.search-history>.focus::after,
+.search-history>div:hover>.delete,
+.search-history>.focus>.delete {
     opacity: 1;
+}
+
+.search-history>div>.delete {
+    position: absolute;
+    margin: 0;
+    right: 12px;
+}
+
+.search-history>div>.delete::after {
+    content: "";
+}
+
+.search-history>.focus>.delete::after {
+    content: "Delete";
+    font-family: initial;
+}
+
+.search-history>div:hover>.delete::after {
+    content: "\e5cd";
+    font-family: unset;
 }

@@ -175,6 +175,8 @@ export class CustomShortcutsCollection extends ShortcutCollections {
         if (key === '') {
             this._shortcutCollections.forEach(e => {
                 e.elm.style.display = '';
+                e.elm.style.opacity = '';
+                e.elm.style.order = '';
             });
             this.refreshPageIndicator();
         } else {
@@ -187,8 +189,12 @@ export class CustomShortcutsCollection extends ShortcutCollections {
                 ) {
                     result_count++;
                     e.elm.style.display = '';
+                    e.elm.style.opacity = 1;
+                    e.elm.style.order = 0;
                 } else {
                     e.elm.style.display = 'none';
+                    e.elm.style.opacity = '';
+                    e.elm.style.order = '';
                 };
                 this.refreshPageIndicator(Math.ceil(result_count / CustomShortcutsCollection.PAGE_SIZE));
             });
