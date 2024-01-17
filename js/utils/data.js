@@ -411,20 +411,13 @@ export class SearchHistory {
         });
     }
     deleteHistory(key) {
-        const removeList = [];
-        this.forEach((record, index) => {
+        for (let i = this.searchHistory.length - 1; i >= 0; i--) {
+            const record = this.searchHistory[i];
+            console.log(i, key, record);
             if (record.key === key) {
-                removeList.push(index);
-                return true;
-            } else {
-                return false
+                this.searchHistory.splice(i, 1);
             }
-        });
-        removeList.forEach(index => {
-            this.searchHistory.splice(index, 1);
-            this.saveHistory();
-
-        });
+        }
     }
     clearHistory() {
         this.searchHistory = [];

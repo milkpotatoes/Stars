@@ -216,6 +216,7 @@ class CommandPanel extends NormalPanel {
 
 class HistoryPanel extends NormalPanel {
     history = new SearchHistory();
+    originKey = '';
     constructor(input) {
         super(input);
         this.elem = document.querySelector('.search-box .search-history');
@@ -230,26 +231,24 @@ class HistoryPanel extends NormalPanel {
         this.input.value = this.elem.children[id]?.getAttribute('data') ??
             this.input.value;
     }
+    focusPrev() {
+        if (this.focus === 0) {
+            this.input.value = this.originKey;
+        }
+        super.focusPrev()
+    }
     updateCommand(options = null) {
         if (options === null) {
             this.hide();
             return;
         }
         this.elem.innerHTML = '';
-        if (options.key !== '#') {
-            const dirSearch = document.createElement('div');
-            dirSearch.setAttribute('data', this.input.value);
-            dirSearch.innerHTML = this.input.value;
-            this.elem.append(dirSearch);
-        }
+        this.originKey = options.key;
         this.history.forEach((history) => {
-            if (history.key === options.key) {
-                return;
-            }
             if (history.key.match(options.key) || options.key === '#') {
                 const div = document.createElement('div');
                 div.setAttribute('data', history.key);
-                div.innerHTML = history.key;
+                div.innerHTML = `${history.key}<span class="delete material-icon"></span>`;
                 this.elem.append(div);
             }
         });
@@ -257,8 +256,32 @@ class HistoryPanel extends NormalPanel {
             this.activated = true;
         }
     }
+    deleteHistory(id = this.focus) {
+        if (id >= 0) {
+            this.history.deleteHistory(this.elem.children[id].getAttribute('data'));
+        }
+        this.updateCommand(this.searchPanel.checkSearchMode(this.originKey));
+    }
     addHistory(key) {
         this.history.recordHistory(key);
+    }
+    setEventListener() {
+        this.elem.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            let focusId = 0;
+            const item = e.target.tagName === "DIV" ? e.target : e.target.closest('div');
+            for (; focusId < this.elem.children.length; focusId++) {
+                if (item === this.elem.children[focusId]) {
+                    break;
+                }
+            }
+            if (e.target.classList.contains('delete')) {
+                this.deleteHistory(focusId);
+            } else {
+                this.focusAt(focusId);
+                this.applyChoice(item);
+            }
+        });
     }
 }
 
@@ -450,6 +473,9 @@ export default class SearchPanel {
                 for (let key in panels) {
                     panels[key].focusNext();
                 }
+            } else if (e.key === 'Delete' && panels.HISTORY_PANEL.activated) {
+                e.preventDefault();
+                panels.HISTORY_PANEL.deleteHistory()
             }
         });
 
