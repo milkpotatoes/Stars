@@ -1,3 +1,11 @@
+/*!
+ * Stars
+ * A simple index page
+ * https://gitee.com/milkpotatoes/stars
+ * Copyright (c) 2024 milkpotatoes
+ * MIT Licence
+ */
+
 export const STATIC_SOURCE = {
     WALLPAPER: 'src/dave-hoefler-W1B7JP4KUp8-unsplash.webp',
     GOOGLE_LOGO: 'src/googlelogo_color_272x92dp.png',

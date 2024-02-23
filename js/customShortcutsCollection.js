@@ -1,3 +1,11 @@
+/*!
+ * Stars
+ * A simple index page
+ * https://gitee.com/milkpotatoes/stars
+ * Copyright (c) 2024 milkpotatoes
+ * MIT Licence
+ */
+
 import { ShortcutCollections } from "./utils/data.js";
 import { AlertDialog } from "./utils/alertdialog.js";
 import { fileToBase64 } from "./utils/utils.js";

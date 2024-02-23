@@ -1,3 +1,11 @@
+/*!
+ * Stars
+ * A simple index page
+ * https://gitee.com/milkpotatoes/stars
+ * Copyright (c) 2024 milkpotatoes
+ * MIT Licence
+ */
+
 import { SEARCH_ENGINES, STATIC_SOURCE } from "../resource.js";
 
 export class Shortcut {
@@ -370,6 +378,7 @@ export class StartProfile {
 }
 
 export class SearchHistory {
+    static MAX_VISIBLE_HISTORY = 8;
     searchHistory = [];
     constructor() {
         this.loadHistory();
@@ -407,13 +416,12 @@ export class SearchHistory {
     }
     filterHistory(key) {
         return this.searchHistory.filter(val => {
-            return val.match(key) !== null;
+            return val.key.match(key) !== null;
         });
     }
     deleteHistory(key) {
         for (let i = this.searchHistory.length - 1; i >= 0; i--) {
             const record = this.searchHistory[i];
-            console.log(i, key, record);
             if (record.key === key) {
                 this.searchHistory.splice(i, 1);
             }
@@ -427,7 +435,7 @@ export class SearchHistory {
         if (typeof callback !== 'function') {
             return
         }
-        for (let i = 0; i < this.searchHistory.length && i < 16; i++) {
+        for (let i = 0; i < this.searchHistory.length && i < SearchHistory.MAX_VISIBLE_HISTORY; i++) {
             callback(this.searchHistory[i], i);
         }
     }
