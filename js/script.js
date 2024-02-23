@@ -1,32 +1,39 @@
+/*!
+ * Stars
+ * A simple index page
+ * https://gitee.com/milkpotatoes/stars
+ * Copyright (c) 2024 milkpotatoes
+ * MIT Licence
+ */
+
 import { StartProfile } from "./utils/data.js";
-import { AlertDialog } from "./utils/alertdialog.js";
-import { STATIC_SOURCE } from "./resource.js";
-import { setWallpaper } from "./utils/utils.js";
 import { SearchEngineManager } from "./searchEngineManager.js";
 import { CustomShortcutsCollection } from "./customShortcutsCollection.js";
 import PagesIndicatorStatus from "./pagesIndicatorStatus.js";
 import ShortcutFilter from "./utils/shortcutsFilter.js";
 import SearchPanel from "./searchPanel.js";
+import { Settings } from "./settings.js";
 
 const startProfile = new StartProfile();
 const customShortcutsCollection = new CustomShortcutsCollection(document.querySelector('.shortcuts'));
 const shortcutFilter = new ShortcutFilter(customShortcutsCollection);
 const searchEngineManager = new SearchEngineManager(startProfile);
-const searchPanel = new SearchPanel(customShortcutsCollection, searchEngineManager, startProfile);
+new SearchPanel(customShortcutsCollection, searchEngineManager, startProfile);
 
-setWallpaper(STATIC_SOURCE.WALLPAPER);
+Settings.showWallapaer();
 
 searchEngineManager.modifySearchEngine(startProfile.SearchEngine);
 
 searchEngineManager.modifyActivatedSearchEngine();
 
 function manageConfigs() {
-    new AlertDialog()
-        .setTitle('设置')
-        .setMessage('施工中，请等待后续更新')
-        .setPositiveButton('确定')
-        .setNegativeButton('关闭')
-        .show()
+    // new AlertDialog()
+    //     .setTitle('设置')
+    //     .setMessage('施工中，请等待后续更新')
+    //     .setPositiveButton('确定')
+    //     .setNegativeButton('关闭')
+    //     .show()
+    Settings.setWallpaper()
 }
 
 

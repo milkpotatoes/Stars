@@ -1,3 +1,11 @@
+/*!
+ * Stars
+ * A simple index page
+ * https://gitee.com/milkpotatoes/stars
+ * Copyright (c) 2024 milkpotatoes
+ * MIT Licence
+ */
+
 body,
 html,
 #app,
@@ -7,6 +15,7 @@ html,
     padding: 0;
     margin: 0;
     color: white;
+    overflow: hidden;
 }
 
 @font-face {
@@ -670,6 +679,25 @@ html,
     border-radius: 4px;
     margin: 0 4px;
     line-height: 1.3em;
+}
+
+.search-command>div>*,
+.search-help>div>*,
+.search-history>div>*{
+    text-wrap: nowrap;
+}
+
+.search-command>div>i,
+.search-help>div>i,
+.search-history>div>i {
+    flex: 0 1 auto;
+    font-style: normal;
+    width: -moz-fit-content;
+    width: fit-content;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    padding-left: .5em;
+    text-wrap: nowrap;
 }
 
 .search-command>div::after,

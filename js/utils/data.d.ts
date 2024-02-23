@@ -1,3 +1,11 @@
+/*!
+ * Stars
+ * A simple index page
+ * https://gitee.com/milkpotatoes/stars
+ * Copyright (c) 2024 milkpotatoes
+ * MIT Licence
+ */
+
 interface Engine {
     name: string,
     url: string,

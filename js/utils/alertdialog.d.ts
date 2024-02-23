@@ -1,3 +1,11 @@
+/*!
+ * Stars
+ * A simple index page
+ * https://gitee.com/milkpotatoes/stars
+ * Copyright (c) 2024 milkpotatoes
+ * MIT Licence
+ */
+
 export class AlertDialog {
     static DIALOG_STATUS = {
         OPENING: 'opening',
@@ -70,10 +78,10 @@ export class AlertDialog {
 
     /**
      * this callback will exectued when the dialog is opening;
-     * @param {() => void} callback 
+     * @param {(messageView: HTMLElement) => void} callback 
      * @returns {AlertDialog}
      */
-    onShow(callback: () => void): AlertDialog;
+    onShow(callback: (messageView: HTMLElement) => void): AlertDialog;
 
     /**
      * this callback will exectued when the dialog is closing;
@@ -93,7 +101,7 @@ export class AlertDialog {
      * Show dialog, or reopen dialog;
      * @returns {AlertDialog}
      */
-    show(): void;
+    show(): AlertDialog;
 
     /**
      * Close dialog, it will destory this dialog;

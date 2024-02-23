@@ -1,5 +1,12 @@
+/*!
+ * Stars
+ * A simple index page
+ * https://gitee.com/milkpotatoes/stars
+ * Copyright (c) 2024 milkpotatoes
+ * MIT Licence
+ */
+
 import { CustomShortcutsCollection } from "./customShortcutsCollection.js";
-import { SearchEngineManager } from "./searchEngineManager.js";
 import { SearchHistory, StartProfile } from "./utils/data.js";
 
 const SEARCH_ENGINE_LOGO = document.querySelector('.search-logo');
@@ -133,7 +140,7 @@ class CommandPanel extends NormalPanel {
         const dirSearch = document.createElement('div');
         dirSearch.setAttribute('data', this.input.value);
         dirSearch.setAttribute('engine-id', this.profiler.DefaultEngine);
-        dirSearch.innerHTML = `使用<span>默认搜索引擎</span>搜索 ${this.input.value}`;
+        dirSearch.innerHTML = `<i>使用</i><span>默认搜索引擎</span><i>搜索</i> <i>${this.input.value}</i>`;
         this.elem.append(dirSearch);
         this.profiler.eachEngine((item, id) => {
             const url = new URL(item.url);
@@ -145,15 +152,15 @@ class CommandPanel extends NormalPanel {
                     !(id === parseInt(options.key ?? '')))) {
                 return
             }
-            let name = url.host.match(/^[\s\S]+\.(\w+)\.\w+$/) ?? url.host.match(/^(\w+)\.\w+$/);
+            let name = url.hostname.match(/^[\s\S]+\.(\w+)\.\w+$/) ?? url.hostname.match(/^(\w+)\.\w+$/);
             if (name !== null) {
                 name = name[1];
             } else {
-                name = url.host;
+                name = url.hostname;
             }
             div.setAttribute('data', `/${name} ${options?.query ?? ''}`);
             div.setAttribute('engine-id', id);
-            div.innerHTML = `使用<span>${item.name}</span>搜索 ${options?.query ?? ''}`;
+            div.innerHTML = `<i>使用</i><span>${item.name}</span><i>搜索</i> <i>${options?.query ?? ''}</i>`;
             this.elem.append(div);
         }, false);
         if (this.elem.children.length > 1) {
@@ -244,14 +251,23 @@ class HistoryPanel extends NormalPanel {
         }
         this.elem.innerHTML = '';
         this.originKey = options.key;
-        this.history.forEach((history) => {
-            if (history.key.match(options.key) || options.key === '#') {
+        if (options.key === '#') {
+            this.history.forEach(history => {
+                const div = document.createElement('div');
+                div.setAttribute('data', history.key);
+                div.innerHTML = `${history.key}<span class="delete material-icon"></span>`;
+                this.elem.append(div);
+            });
+        } else {
+            const matchedHistory = this.history.filterHistory(options.key);
+            for (let i = 0; i < matchedHistory.length && i < SearchHistory.MAX_VISIBLE_HISTORY; i++) {
+                const history = matchedHistory[i];
                 const div = document.createElement('div');
                 div.setAttribute('data', history.key);
                 div.innerHTML = `${history.key}<span class="delete material-icon"></span>`;
                 this.elem.append(div);
             }
-        });
+        }
         if (this.elem.children.length > 1 || options.key === '' || options.key === '#') {
             this.activated = true;
         }
