@@ -1,3 +1,11 @@
+/*!
+ * Stars
+ * A simple index page
+ * https://gitee.com/milkpotatoes/stars
+ * Copyright (c) 2024 milkpotatoes
+ * MIT Licence
+ */
+
 import { CustomShortcutsCollection } from "../customShortcutsCollection.js";
 
 export default class ShortcutFilter {

@@ -1,5 +1,13 @@
+/*!
+ * Stars
+ * A simple index page
+ * https://gitee.com/milkpotatoes/stars
+ * Copyright (c) 2024 milkpotatoes
+ * MIT Licence
+ */
+
 import { AlertDialog } from "./alertdialog.js";
-import { colorfulImg } from "./colorfulimg.js";
+const colorfulImg = require('colorfulImg')
 
 export function alertMessage(msg) {
     new AlertDialog()
@@ -17,14 +25,6 @@ export async function getPrimaryColor(image) {
         img.src = image;
     });
 }
-
-export function setWallpaper(wallpaper) {
-    document.querySelector('.wallpaper').style.backgroundImage = `url(${wallpaper})`;
-    getPrimaryColor(wallpaper)
-        .then(e => {
-            document.documentElement.style.backgroundColor = `rgb(${e.r}, ${e.g}, ${e.b})`;
-        });
-};
 
 export function showMessage(msg = '') {
     new AlertDialog()
@@ -46,3 +46,36 @@ export function fileToBase64(file) {
         };
     });
 };
+
+const MAX_STORAGE_BLOCK_SIZE = 1000 ** 2;
+
+export function readLargeStorage(key) {
+    let final_value = localStorage.getItem(key);
+    if (final_value) {
+        if (final_value.length >= MAX_STORAGE_BLOCK_SIZE) {
+            let data_parts = 1;
+            let splited_data = null;
+            do {
+                splited_data = localStorage.getItem(`${key}_${data_parts}`);
+                if (splited_data) {
+                    final_value += splited_data
+                }
+                data_parts++;
+            } while (splited_data.length >= MAX_STORAGE_BLOCK_SIZE);
+        }
+    }
+    return final_value;
+}
+
+export function saveLargeStorage(key, value) {
+    const strVal = String(value);
+    let part = 0;
+    let savedSize = 0;
+    do {
+        const curKey = key + (part > 0 ? '_' + part : '');
+        console.log(curKey, strVal.substring(savedSize, savedSize + MAX_STORAGE_BLOCK_SIZE))
+        localStorage.setItem(curKey, strVal.substring(savedSize, savedSize + MAX_STORAGE_BLOCK_SIZE));
+        part++;
+        savedSize += MAX_STORAGE_BLOCK_SIZE;
+    } while (savedSize < strVal.length);
+}

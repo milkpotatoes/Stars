@@ -1,3 +1,11 @@
+/*!
+ * Stars
+ * A simple index page
+ * https://gitee.com/milkpotatoes/stars
+ * Copyright (c) 2024 milkpotatoes
+ * MIT Licence
+ */
+
 import { AlertDialog } from "./utils/alertdialog.js";
 import { StartProfile } from "./utils/data.js";
 import { fileToBase64, alertMessage } from "./utils/utils.js";
@@ -13,7 +21,7 @@ function discordChanges() {
     return new Promise((reslove, reject) => {
         new AlertDialog()
             .setTitle('提示')
-            .setMessage('您当前未保存的自定义搜索引擎，仍然退出吗？')
+            .setMessage('您当前未保存的设置，仍然退出吗？')
             .setPositiveButton('确定', () => {
                 reslove('ok');
             })
@@ -25,7 +33,11 @@ function discordChanges() {
     });
 }
 
-const manageSearchEnginesDialog = (view, this_, default_icon) => {
+
+const default_icon = 'src/image_FILL0_wght400_GRAD0_opsz24.svg';
+const default_icon_src = new URL(default_icon, location.origin).href;
+
+const manageSearchEnginesDialog = (view, this_) => {
     const list = view.querySelector('div');
     view.querySelector('dt').addEventListener('click', () => {
         if (list.classList.contains('hide-disabled')) {
@@ -67,25 +79,12 @@ const manageSearchEnginesDialog = (view, this_, default_icon) => {
             item.remove();
             this_.startProfile.removeCustomSearchEngine(id);
         } else if (classList.contains('add')) {
-            const default_icon_src = new URL(default_icon, location.origin).href;
             const img_el = item.querySelector('img.icon');
             const icon = img_el.src;
             const logo = img_el.data;
             const name = item.querySelector('.name').value;
             const url = item.querySelector('.url').value;
             const index = item.querySelector('.index').value;
-            if (icon === '' || icon === default_icon_src) {
-                alertMessage('请先设置图标');
-                return;
-            };
-            if (name === '' || url === '' || index === '') {
-                alertMessage('名称、链接、主页不可为空');
-                return;
-            };
-            if (!url.match(/%s/)) {
-                alertMessage('链接不包含搜索词, 请检查');
-                return;
-            };
             const engineConfig = {
                 name: name,
                 icon: icon,
@@ -93,6 +92,10 @@ const manageSearchEnginesDialog = (view, this_, default_icon) => {
                 url: url,
                 index: index,
             };
+            if (!SearchEngineManager.checkEngine(engineConfig)) {
+                return;
+            }
+
             const id = this_.startProfile.addCustomSearchEngine(engineConfig);
             const new_item = document.createElement('div');
             new_item.innerHTML = this_.genCSEConfig(engineConfig, id)
@@ -131,6 +134,27 @@ const manageSearchEnginesDialog = (view, this_, default_icon) => {
 }
 
 export class SearchEngineManager {
+    /**
+     * 
+     * @param {Engine} engine 
+     */
+    static checkEngine(engine, alert = true) {
+        const { icon, name, url, index } = engine;
+        if (icon === '' || icon === default_icon_src) {
+            if (alert) alertMessage('请先设置图标');
+            return false;
+        };
+        if (name === '' || url === '' || index === '') {
+            if (alert) alertMessage('名称、链接、主页不可为空');
+            return false;
+        };
+        if (!url.match(/%s/)) {
+            if (alert) alertMessage('链接不包含搜索词, 请检查');
+            return false;
+        };
+        return true;
+    }
+
     startProfile;
 
     /**
@@ -313,28 +337,67 @@ export class SearchEngineManager {
             });
             if (notsaved) {
                 discordChanges()
-                    .then(() => {
-                        this.close();
-                    })
-                    .catch(() => {
-                        return true;
-                    });
+                    .then(() => this.close())
+                    .catch(() => true);
                 return true;
             }
             return false;
         };
 
-        const default_icon = 'src/image_FILL0_wght400_GRAD0_opsz24.svg';
+        const cancleChanges = function () {
+            const inputs = this.querySelectorAll('.custom input');
+            let notSaved = false;
+            inputs.forEach(element => {
+                notSaved = notSaved || element.value !== element.getAttribute('value');
+            });
+            if (notSaved) {
+                discordChanges()
+                    .then(() => this.close())
+                    .catch(() => true);
+                return true;
+            }
+            return buttonListener.apply(this);
+        };
+
+        const saveChanges = function () {
+            const customs = this.querySelectorAll('.custom');
+            let illegal = [];
+            customs.forEach(element => {
+                const inputs = element.querySelectorAll('input');
+                const engine = this_.startProfile.getSearchEngine(parseInt(element.getAttribute('data')));
+                inputs.forEach(input => {
+                    const clst = input.classList;
+                    if (clst.contains('name')) {
+                        engine.name = input.value;
+                    } else if (clst.contains('url')) {
+                        engine.url = input.value;
+                    } else if (clst.contains('index')) {
+                        engine.index = input.value;
+                    }
+                    if (!SearchEngineManager.checkEngine(engine, false) && !illegal.includes(engine)) {
+                        illegal.push(engine);
+                    };
+                });
+            });
+            if (illegal.length > 0) {
+                alertMessage('搜索引擎' + illegal.map(e => e.name).join(', ') + '部分配置不合法，请检查！');
+                return true;
+            } else {
+                this_.startProfile.saveCustomSearchEngine();
+                return buttonListener.apply(this);
+            }
+        }
+
         const customView = `<style> .material-icon { font-family: "material-icon"; } dl {display: grid; grid-template-columns: 1fr; grid-auto-rows: 32px; gap: 8px; align-items: center; padding: 0; margin: 0; } .icon { width: 20px; height: 20px; user-select: none; } dd { margin: 0; display: grid; grid-template-columns: 24px .4fr 1fr .8fr 24px; gap: 8px; align-items: center; } dt { opacity: .8; font-size: .8em; padding-top: 8px; } span.icon { width: 32px; height: 32px; font-size: 20px; line-height: 32px; border-radius: 4px; text-align: center; transition: ease-in-out .2s; } span.icon:hover { background: rgba(0 0 0 / .2); } .icon.block::before { content: "\\e14b" } .icon.remove::before { content: "\\e14c" } .icon.restore::before, .icon.add::before { content: "\\e145" } .hide-disabled .disabled { display: none; } .disabled { order: 1; } .disabled > * { opacity: .6; } .disabled > .icon.restore { opacity: 1 } dt { user-select: none; pointer: default; } .hide-disabled dt::before { content: "►"; } .show-disabled dt::before { content: "▼"; } </style> <div class="hide-disabled"> <dl> ${searchEngine} <dd class="add-item"> <img class="icon" src="${default_icon}"> <input type="text" placeholder="名称" class="name"><input type="text" placeholder="链接, 使用 &quot;%s&quot; 代替搜索词" class="url" value=""><input type="text" placeholder="首页" class="index" value=""><span class="icon material-icon add"></span></dd> <dt> 已禁用</dt> </dl> </div>`;
         const this_ = this;
         new AlertDialog()
             .setTitle('管理搜索引擎')
             .setView(customView)
-            .setPositiveButton('确定', buttonListener)
-            .setNegativeButton('关闭', buttonListener)
+            .setPositiveButton('确定', saveChanges)
+            .setNegativeButton('关闭', cancleChanges)
             .setModal(true)
             .onShow((view) => {
-                manageSearchEnginesDialog(view, this_, default_icon);
+                manageSearchEnginesDialog(view, this_);
             })
             .onClose(() => {
                 this_.modifyActivatedSearchEngine();
