@@ -82,6 +82,7 @@ function expandMoreLinks() {
             }, 200);
             return;
         };
+        let timeout = 0;
         clearTimeout(timer);
         clearTimeout(scroll_bottom);
         if (deltaY >= 200) {
@@ -91,33 +92,29 @@ function expandMoreLinks() {
                 } else {
                     customShortcutsCollection.currentPage += 1;
                 }
-                setTimeout(() => {
-                    executing = false;
-                }, 200);
+                timeout = 200;
             } else {
                 expandShortcuts();
-
-                setTimeout(() => {
-                    executing = false;
-                }, 500);
+                timeout = 500
             };
             executing = true;
         } else if (deltaY <= -200) {
             if (appRoot.classList.contains('expand')) {
                 if (customShortcutsCollection.currentPage === 0) {
                     expandShortcuts(false);
-                    setTimeout(() => {
-                        executing = false;
-                    }, 500);
+                    timeout = 500;
                 } else {
                     customShortcutsCollection.currentPage -= 1;
-                    setTimeout(() => {
-                        executing = false;
-                    }, 200);
+                    timeout = 200;
                 }
             }
             executing = true;
         };
+        if (timeout > 0) {
+            setTimeout(() => {
+                executing = false;
+            }, timeout);
+        }
         timer = setTimeout(() => {
             deltaY = 0;
         }, 200);
