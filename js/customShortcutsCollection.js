@@ -9,6 +9,8 @@
 import { ShortcutCollections } from "./utils/data.js";
 import { AlertDialog } from "./utils/alertdialog.js";
 import { fileToBase64 } from "./utils/utils.js";
+import { Shortcut } from "./utils/data.js";
+import { showMessage } from "./utils/utils.js";
 
 export class CustomShortcutsCollection extends ShortcutCollections {
     static PAGE_SIZE = 40;
@@ -41,7 +43,8 @@ export class CustomShortcutsCollection extends ShortcutCollections {
                     name: link.name,
                     url: link.url,
                     icon: link.icon,
-                    desc: link.desc
+                    desc: link.desc,
+                    type: link.type ?? Shortcut.SHORTCUT_TYPE_SHORTCUT,
                 });
             }
         };
@@ -74,6 +77,7 @@ export class CustomShortcutsCollection extends ShortcutCollections {
                 url: link.url,
                 desc: link.desc,
                 icon: link.icon,
+                type: link.type,
             });
         }
         localStorage.ShortcutLinks = JSON.stringify(links);
@@ -84,31 +88,40 @@ export class CustomShortcutsCollection extends ShortcutCollections {
         this.saveLinks();
         return val;
     };
-    editAddDialog(onsuccess = undefined, name = '', url = '', icon = undefined, desc = '') {
-        const customView = `<style>div {display: grid; grid-template-columns: 96px 1fr; grid-template-rows: repeat(3, 32px); grid-template-areas: "i n" "i u" "i d"; gap: 12px; align-items: center; } .icon { grid-area: i; width: 96px; height: 96px; background: rgba(0 0 0 / .1); object-fit: contain; border-radius: 8px; padding: 8px; box-sizing: border-box;} </style> <div> <img class="icon" src="src/image_FILL0_wght400_GRAD0_opsz24.svg"> <input type="file" style="display: none;" class="icon" accept="image/*"> <input type="text" placeholder="名称" class="name"><input type="text" placeholder="链接" class="url"><input type="text" placeholder="描述" class="desc"></div>`;
+    editAddDialog(onsuccess = undefined, { name = '', url = '', icon = undefined, desc = '', type = Shortcut.SHORTCUT_TYPE_SHORTCUT } = {}) {
+        const customView = `<style>.main-view{display:grid;grid-template-columns:76px 1fr;grid-template-rows:repeat(3, 32px);grid-template-areas:"i n" "i u" "w d";gap: 12px;align-items:center}
+.icon{grid-area:i;width:76px;height:76px;background:rgba(0 0 0 / .1);object-fit:contain;border-radius:8px;padding:8px;box-sizing:border-box}label{grid-area: w;text-align:center}input[type=checkbox]{vertical-align: text-top}</style> 
+<div class="main-view"> <img class="icon" src="src/image_FILL0_wght400_GRAD0_opsz24.svg"> 
+<input type="file" style="display: none;" class="icon" accept="image/*"> 
+<input type="text" placeholder="名称" class="name">
+<input type="text" placeholder="链接" class="url">
+<input type="text" placeholder="描述" class="desc">
+<label><input type="checkbox" class="iswidget" id="iswidget">小部件</label>
+</div>`;
         const collection = this;
         const dialog = new AlertDialog()
-            .setTitle('添加')
+            .setTitle(name === '' ? '添加' : '修改')
             .setView(customView)
             .setPositiveButton('确定', function () {
                 const _name = this.querySelector("input.name").value;
                 const _icon = this.querySelector("img.icon").src;
                 const _url = this.querySelector("input.url").value;
                 const _desc = this.querySelector("input.desc").value;
+                const _type = this.querySelector("input.iswidget").checked ? Shortcut.SHORTCUT_TYPE_WIDGET : Shortcut.SHORTCUT_TYPE_SHORTCUT;
                 if (_name === '') {
-                    CustomShortcutsCollection.showMessage('名称不能为空')
+                    showMessage('名称不能为空')
                 } else if (_url === '') {
-                    CustomShortcutsCollection.showMessage('链接不能为空')
+                    showMessage('链接不能为空')
                 } else {
                     try {
                         new URL(_url);
                         if (typeof onsuccess === 'function') {
-                            onsuccess(_name, _url, _icon, _desc);
+                            onsuccess(_name, _url, _icon, _desc, _type);
                         }
                         collection.saveLinks();
                         this.close();
                     } catch {
-                        CustomShortcutsCollection.showMessage('链接格式错误');
+                        showMessage('链接格式错误');
                     }
                 }
                 return true;
@@ -120,13 +133,13 @@ export class CustomShortcutsCollection extends ShortcutCollections {
                 try {
                     const url1 = new URL(url).origin + '/favicon.ico';
                     icon.onerror = () => {
-                        CustomShortcutsCollection.showMessage('获取失败，请手动选择图标');
+                        showMessage('获取失败，请手动选择图标');
                         icon.src = prev_icon;
                         icon.onerror = undefined;
                     };
                     icon.src = url1;
                 } catch {
-                    CustomShortcutsCollection.showMessage('请输入正确的链接后再试');
+                    showMessage('请输入正确的链接后再试');
                 }
                 return true;
             })
@@ -138,6 +151,7 @@ export class CustomShortcutsCollection extends ShortcutCollections {
         dialog.querySelector('.name').value = name;
         dialog.querySelector('.url').value = url;
         dialog.querySelector('.desc').value = desc;
+        dialog.querySelector('.iswidget').checked = type === Shortcut.SHORTCUT_TYPE_WIDGET;
         preview.addEventListener('click', () => {
             file_select.click();
         });
@@ -153,20 +167,22 @@ export class CustomShortcutsCollection extends ShortcutCollections {
     };
     edit(id) {
         const link = this.at(id);
-        this.editAddDialog((name, url, icon, desc) => {
+        this.editAddDialog((name, url, icon, desc, type) => {
             link.name = name;
             link.url = url;
             link.icon = icon;
             link.desc = desc;
-        }, link.name, link.url, link.icon, link.desc);
+            link.type = type;
+        }, link);
     };
     userAdd() {
-        this.editAddDialog((name, url, icon, desc) => {
+        this.editAddDialog((name, url, icon, desc, type) => {
             this.add({
                 name: name,
                 url: url,
                 icon: icon,
                 desc: desc,
+                type: type,
             });
         })
     };

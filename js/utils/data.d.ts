@@ -15,6 +15,35 @@ interface Engine {
     logo: string,
 }
 
+
+export class Shortcut {
+    static SHORTCUT_TYPE_SHORTCUT = 0;
+    static SHORTCUT_TYPE_WIDGET = 1;
+    elm: HTMLElement;
+    type: Shortcut.SHORTCUT_TYPE_SHORTCUT | Shortcut.SHORTCUT_TYPE_WIDGET;
+    name: string;
+    icon: string;
+    icon: string;
+    desc: string;
+    parent: ShortcutCollections;
+
+    setClickEvent(): void;
+    setEditEvent(): void;
+    setDeleteEvent(): void;
+    setDraggableEvent(): void;
+    setDragEvent(): void;
+    setListener(): void;
+
+    constructor(name: string, url: string, icon: string, desc?: string, parent?: ShortcutCollections,
+        type?: Shortcut.SHORTCUT_TYPE_SHORTCUT | Shortcut.SHORTCUT_TYPE_WIDGET): Shortcut;
+
+    bind(collection: ShortcutCollections): void;
+
+    open(): void;
+    remove(): void;
+    edit(): void;
+}
+
 export class StartProfile {
     static INNER_DIV = 64;
     INNER_SEARCH_ENGINES = SEARCH_ENGINES;

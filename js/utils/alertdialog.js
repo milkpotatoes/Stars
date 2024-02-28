@@ -23,6 +23,7 @@ input[type=file]{margin-left:32px;width:calc(100% - 32px);line-height:2em}
 input[type=file]::before{content:"";background:#999;clip-path:polygon(0 8%,36% 8%,40% 20%,100% 20%,100% 92%,0 92%);width:16px;height:16px;position:absolute;margin:8px 8px;display:block;margin-left:-32px}
 input[type=file]:active::file-selector-button,input[type=file]:focus::file-selector-button{width:32px;height:32px;margin-top:0;margin-left:-40px}
 input[type=file]::file-selector-button{border:none;text-indent:-100px;width:0;height:0;border-radius:50%;position:absolute;margin-left:-24px;margin-top:16px;background:rgba(0 0 0 / .12);transition:ease-in-out .2s;z-index:1;display:block;padding:0}
+input[type=checkbox]{width:1em;height:1em;display:inline-block;min-height:1em;margin:0;line-height:1em;margin-right:.5em;}
 input:active,input:focus,select:active,select:focus,textarea:active,textarea:focus{background:rgba(0 0 0 / .16);background-position:0 100%;background-size:100% 1px}
 button{padding:0 12px;box-sizing:border-box;height:32px;border:none;outline:0;background:var(--background-color);transition:ease-in-out .2s;border-radius:2px;font-size:.9em;min-width:56px;width:max-content;color:#fff;font-weight:700;box-shadow:2px 4px 16px -6px rgba(0 0 0 / .75)}
 button:disabled{background-color:#ddd;color:#666;box-shadow:0 5px 16px -8px!important;cursor:not-allowed}
