@@ -418,7 +418,7 @@ export default class SearchPanel {
     setEventListener() {
         SEARCH_ENGINE_LOGO.addEventListener('click', () => {
             const engine = this.profiler.getSearchEngine();
-            location.assign(engine.index);
+            window.open(engine.index, '_top');
         });
 
         SEARCH_ENGINE_SELECT.addEventListener('click', e => {
@@ -453,7 +453,7 @@ export default class SearchPanel {
                 const url = engine.url.replace(/%s/,
                     encodeURIComponent(searchKey));
                 this.panels.HISTORY_PANEL.addHistory(searchKey);
-                location.assign(url);
+                window.open(url, '_top');
             };
         });
 
