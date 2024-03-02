@@ -22,24 +22,61 @@ class TodoList extends HTMLElement {
             todoItem = new TodoItem(item);
         }
         super.append(todoItem);
+        return todoItem;
     }
     setData(data) {
         this.querySelectorAll('todo-item').forEach(e => e.remove());
         this.children[1].style.display = '';
+        const laterAppend = [];
+        let j = 0;
         for (let i = 0; i < data.length; i++) {
-            this.append(data[i]);
+            const item = this.append(data[i]);
+            if (data[i].checked) {
+                laterAppend.push(item);
+                j--;
+            }
+            item.style.transform = `translate(0, ${item.clientHeight * j}px)`;
+            j++;
+        }
+        for (let i = 0; i < laterAppend.length; i++) {
+            const item = laterAppend[i];
+            item.style.transform = `translate(0, ${item.clientHeight * j}px)`;
+            j++;
         }
         if (data.length > 0) {
             this.children[1].style.display = 'none';
         }
     }
+    sortElement() {
+        const siblings = this.querySelectorAll('todo-item');
+        if (siblings.length === 0) {
+            return;
+        }
+        const copyArr = [];
+        for (let i = 0; i < siblings.length; i++) {
+            copyArr.push(siblings[i]);
+        }
+        copyArr.sort((a, b) => {
+            return a.checked - b.checked;
+        });
+        const itemHeight = copyArr[0].clientHeight;
+        for (let i = 0; i < copyArr.length; i++) {
+            const item = copyArr[i];
+            const style = `translate(0, ${i * itemHeight}px)`;
+            item.animate([
+                {
+                    transform: item.style.transform,
+                }, {
+                    transform: style,
+                }
+            ], {
+                easing: 'ease-in-out',
+                duration: 200,
+            });
+            item.style.transform = style;
+        }
+    }
     setListener() {
-        this.addEventListener('mousewheel', (e) => {
-            this.scrollBy(0, e.deltaY);
-        });
-        this.addEventListener('DOMMouseScroll', (e) => {
-            this.scrollBy(0, e.deltaY * 50);
-        });
         this.firstElementChild.addEventListener('click', () => {
             const firstElm = this.children[1];
             this.children[1].style.display = 'none';
@@ -47,15 +84,21 @@ class TodoList extends HTMLElement {
                 const newItem = new TodoItem('');
                 firstElm.after(newItem);
                 newItem.children[1].focus();
+                this.sortElement();
             } else {
                 firstElm.nextElementSibling.children[1].focus();
             }
         });
-        this.addEventListener('change', () => {
+        this.addEventListener('change', (e) => {
+            const elem = e.target;
+            if (e.target.type === 'checkbox') {
+                this.sortElement();
+            }
             this.saveData();
         });
         this.addEventListener('click', (e) => {
             if (e.target.classList.contains('delete')) {
+                this.sortElement();
                 this.saveData();
             }
         });
@@ -114,51 +157,10 @@ class TodoItem extends HTMLElement {
         this.setListener();
     };
     setListener() {
-        this.children[0].addEventListener('change', (e) => {
-            const parent = this.parentElement;
-            let prevChecked = this;
-            let prevUnchecked = this;
-            do {
-                prevChecked = prevChecked.previousElementSibling;
-            } while (prevChecked !== null && !prevChecked.checked);
-            do {
-                prevUnchecked = prevUnchecked.previousElementSibling
-            } while (prevUnchecked !== null && prevUnchecked.checked);
-            if (prevChecked === null) {
-                prevChecked = parent.lastElementChild;
-                while (prevChecked !== this && prevChecked.checked) {
-                    prevChecked = prevChecked.previousElementSibling;
-                }
-            }
-            if (prevUnchecked == this) {
-                prevUnchecked = this.previousElementSibling;
-            }
-            const amimateOptions = {
-                easing: 'linear',
-                duration: 200,
+        this.children[0].addEventListener('change', () => {
+            if (this.name === '') {
+                this.checked = false;
             };
-            const animateStart = {
-                transform: 'translate(0, 0)',
-            };
-            if (e.target.checked) {
-                if (this.name === '') {
-                    this.checked = false;
-                    return;
-                }
-                this.animate([animateStart, {
-                    transform: `translate(0, ${(prevChecked ?? this).offsetTop - this.offsetTop}px)`,
-                }], amimateOptions);
-                setTimeout(() => {
-                    this.style.order = 1;
-                }, amimateOptions.duration + 50);
-            } else {
-                this.animate([animateStart, {
-                    transform: `translate(0, ${(prevChecked ?? this).offsetTop - this.offsetTop}px)`,
-                }], amimateOptions);
-                setTimeout(() => {
-                    this.style.order = 0;
-                }, amimateOptions.duration + 50);
-            }
         });
         this.children[2].addEventListener('click', () => {
             super.remove();
@@ -173,7 +175,6 @@ const datas = JSON.parse(localStorage.TODO_LIST_DATA ?? '[]');
 
 const todoList = document.querySelector('todo-list');
 todoList.setData(datas);
-
 
 window.addEventListener('storage', () => {
     const datas = JSON.parse(localStorage.TODO_LIST_DATA ?? '[]');

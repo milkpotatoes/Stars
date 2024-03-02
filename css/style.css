@@ -740,7 +740,6 @@ html,
 
 .widget {
     position: absolute;
-    border: none;
     background: rgba(255 255 255 / .75);
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
@@ -813,6 +812,9 @@ html,
     position: absolute;
     bottom: 0;
     right: 0;
-    clip-path: polygon(100% 0, 100% 100%, 0 100%);
     cursor: se-resize;
+}
+.widget>.resizable:active {
+    width: 5em;
+    height: 5em;
 }
