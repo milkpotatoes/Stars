@@ -135,11 +135,19 @@ class AlertDialogElement extends HTMLElement {
 
     _setButton(text, className, listener) {
         this._buttons.style.display = '';
-        const button = document.createElement('button');
+        const existBtn = this._dialog.querySelector(`.${className}`);
+        const button = existBtn ?? document.createElement('button');
         button.classList.add('button', className);
         button.textContent = text;
         this._buttons.append(button);
         const dialog = this.dialog;
+        if (existBtn) {
+            if (typeof listener === 'function') {
+                this._removeListener(button);
+            } else {
+                return;
+            }
+        }
         this._addEventListener(button, 'click', function (event) {
             if (typeof listener === 'function') {
                 if (!listener.call(dialog, event)) {
@@ -179,10 +187,12 @@ class AlertDialogElement extends HTMLElement {
         this._modalDialog = dismissOnClickOverlay;
     };
 
-    _removeListener() {
+    _removeListener(element) {
         this._eventListener.forEach((listener, index) => {
-            listener.element.removeEventListener(listener.type, listener.listener);
-            this._eventListener[index] = null;
+            if (listener && !element || element === listener.element) {
+                listener.element.removeEventListener(listener.type, listener.listener);
+                this._eventListener[index] = null;
+            }
         });
     };
 
