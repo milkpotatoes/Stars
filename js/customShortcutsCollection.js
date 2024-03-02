@@ -120,8 +120,8 @@ export class CustomShortcutsCollection extends ShortcutCollections {
                         }
                         collection.saveLinks();
                         this.close();
-                    } catch {
-                        showMessage('链接格式错误');
+                    } catch (e) {
+                        showMessage('链接格式错误', e.toString());
                     }
                 }
                 return true;
@@ -132,14 +132,14 @@ export class CustomShortcutsCollection extends ShortcutCollections {
                 const prev_icon = icon.src;
                 try {
                     const url1 = new URL(url).origin + '/favicon.ico';
-                    icon.onerror = () => {
-                        showMessage('获取失败，请手动选择图标');
+                    icon.onerror = (err) => {
+                        showMessage('获取失败，请手动选择图标', err.toString());
                         icon.src = prev_icon;
                         icon.onerror = undefined;
                     };
                     icon.src = url1;
-                } catch {
-                    showMessage('请输入正确的链接后再试');
+                } catch (err) {
+                    showMessage('请输入正确的链接后再试', err.toString());
                 }
                 return true;
             })

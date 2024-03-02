@@ -45,7 +45,7 @@ class Widget {
 
                 autoCancelDrag = setTimeout(() => {
                     dragging = false;
-                }, 100);
+                }, 3000);
             };
             document.addEventListener('mousemove', dragListener);
             document.addEventListener('mouseup', (event) => {
@@ -137,8 +137,9 @@ class Widget {
             this.pined = !this.pined;
         }.bind(this));
         openInNewBtn.addEventListener('click', (e) => {
-            window.open(url, '_blank', `width=${this.width},height=${this.height},left=${this.pos.x + e.screenX -
-                e.clientX},top=${this.pos.y + e.screenY - e.clientY},popup,noopener`);
+            const radio = window.devicePixelRatio;
+            this.popup(this.pos.x * radio + e.screenX - e.clientX * radio,
+                this.pos.y * radio + e.screenY - e.clientY * radio);
             this.hide();
             this.destory();
         });
@@ -159,6 +160,10 @@ class Widget {
             this.root.style.left = this.pos.x + 'px';
             this.root.style.top = this.pos.y + 'px';
         });
+    }
+    popup(x, y) {
+        window.open(this.url, '_blank', `width=${this.width * window.devicePixelRatio},height=${this.height *
+            window.devicePixelRatio},left=${x},top=${y},popup,noopener`);
     }
     show(x, y) {
         if (this.status !== Widget.WIDGET_STATUS_HIDDEN) {
@@ -257,7 +262,20 @@ export class Shortcut {
     }
     set url(url) {
         if (this.type === Shortcut.SHORTCUT_TYPE_WIDGET) {
-            this.widget.setUrl(url);
+            if (location.protocol === 'https') {
+                const mUrl = new URL(url);
+                if (mUrl.protocol !== 'https') {
+                    throw new Error('cannot use "http" widgets under "https" web.')
+                }
+            }
+            if (this.widget) {
+                this.widget.setUrl(url);
+            }
+        } else {
+            if (this.widget) {
+                this.widget.destory();
+                this.widget = null;
+            }
         }
         this._url = url;
     }
@@ -410,9 +428,13 @@ export class Shortcut {
                     const box = this.elm.getBoundingClientRect();
                     const { x, y, width: w, height: h } = box
                     if (this.widget === null) {
-                        this.widget = new Widget(this.name, this.url, w * 2, h * 2);
+                        this.widget = new Widget(this.name, this.url, w * 2 + 24, h * 2 + 24);
                     }
-                    this.widget.show(x + w / 2, y + h / 2);
+                    if (mousebutton === 1) {
+                        this.widget.show(x + w / 2, y + h / 2);
+                    } else if (mousebutton === 4) {
+                        this.widget.popup(x, y);
+                    }
                     break;
                 case Shortcut.SHORTCUT_TYPE_SHORTCUT:
                 default:

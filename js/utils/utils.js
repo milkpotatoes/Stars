@@ -26,11 +26,25 @@ export async function getPrimaryColor(image) {
     });
 }
 
-export function showMessage(msg = '') {
-    new AlertDialog()
+export function showMessage(msg = '', detail = null) {
+    const dialog = new AlertDialog()
         .setMessage(msg)
         .setPositiveButton('关闭')
         .show();
+    let showDetail = false;
+    if (detail !== null) {
+        dialog.setNeturalButton('详细信息', () => {
+            if(showDetail) {
+                dialog.setNeturalButton('详细信息');
+                dialog.setMessage(msg);
+            } else {
+                dialog.setNeturalButton('简要信息');
+                dialog.setMessage(detail);
+            }
+            showDetail = !showDetail;
+            return true;
+        });
+    }
 };
 export function fileToBase64(file) {
     return new Promise((resolve, reject) => {
