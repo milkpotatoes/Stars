@@ -1,3 +1,5 @@
+import { todoFormatter } from "./utils.js";
+
 class TodoList extends HTMLElement {
     constructor() {
         super();
@@ -123,6 +125,10 @@ class TodoList extends HTMLElement {
 }
 
 class TodoItem extends HTMLElement {
+    checkBox = null;
+    viewer = null;
+    input = null;
+    delBtn = null;
     get name() {
         return this.children[1].value;
     };
@@ -143,26 +149,56 @@ class TodoItem extends HTMLElement {
         const checkBox = document.createElement('input');
         checkBox.type = 'checkbox';
         checkBox.checked = checked;
-        const text = document.createElement('input');
-        text.type = 'text';
-        text.placeholder = '添加...';
-        text.value = name;
+        this.checkBox = checkBox;
+        const viewer = document.createElement('span');
+        viewer.classList.add('viewer');
+        viewer.innerHTML = todoFormatter(name);
+        this.viewer = viewer;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = '添加...';
+        input.value = name;
+        this.input = input;
         const delBtn = document.createElement('span');
         delBtn.classList.add('material-icon', 'delete');
         delBtn.textContent = 'close';
+        this.delBtn = delBtn;
         this.append(checkBox);
-        this.append(text);
+        this.append(input);
+        this.append(viewer);
         this.append(delBtn);
         this.style.order = checked ? 1 : 0;
         this.setListener();
+        this.showEditor(false);
     };
+    showEditor(show = false) {
+        if (show || this.name === '') {
+            this.viewer.style.display = 'none';
+            this.input.style.display = '';
+        } else {
+            this.viewer.style.display = '';
+            this.input.style.display = 'none';
+        }
+    }
     setListener() {
-        this.children[0].addEventListener('change', () => {
+        this.checkBox.addEventListener('change', () => {
             if (this.name === '') {
                 this.checked = false;
             };
         });
-        this.children[2].addEventListener('click', () => {
+        this.input.addEventListener('blur', () => {
+            this.viewer.innerHTML = todoFormatter(this.input.value);
+            this.showEditor(false);
+        });
+        this.viewer.addEventListener('click', e => {
+            if(!(e.target instanceof HTMLAnchorElement)) {
+                console.log(this)
+                this.showEditor(true);
+                this.input.focus();
+            }
+            console.log(e.target)
+        });
+        this.delBtn.addEventListener('click', () => {
             super.remove();
         }, { once: true });
     }
