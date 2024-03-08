@@ -3,6 +3,11 @@
     src: url(../../../src/material-icons.woff2);
 }
 
+:root {
+    --accent-bg-color: #ea1;
+    --accent-color: #fa1;
+}
+
 html,
 body,
 #app {
@@ -70,7 +75,7 @@ todo-item input[type=checkbox] {
 }
 
 todo-item input[type=checkbox]:checked {
-    background-color: #ea1;
+    background-color: var(--accent-bg-color);
     border: solid 1px #ccc;
 }
 
@@ -82,6 +87,7 @@ todo-item input[type=checkbox]:checked::before {
     font-weight: bold;
 }
 
+todo-item .viewer,
 todo-item input[type=text] {
     display: inline-block;
     height: 1.5em;
@@ -93,6 +99,13 @@ todo-item input[type=text] {
     background-color: transparent;
     outline: none;
     font-size: .9em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+todo-item .viewer>a {
+    color: var(--accent-bg-color);
 }
 
 todo-item .delete {
@@ -109,9 +122,7 @@ todo-item .delete:hover {
     color: rgba(0 0 0 / .75);
 }
 
-
-
-todo-item input[type=checkbox]:checked+input[type=text] {
+todo-item input[type=checkbox]:checked~.viewer {
     text-decoration: line-through;
     color: rgba(0 0 0 / .6);
 }
@@ -124,7 +135,7 @@ todo-list>.new-item {
     height: 36px;
     font-size: 1.6em;
     border-radius: 50%;
-    background: #fa1;
+    background: var(--accent-color);
     display: flex;
     align-items: center;
     justify-content: center;
