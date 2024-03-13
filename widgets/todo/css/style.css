@@ -49,7 +49,7 @@ todo-item {
     padding: 0 .5em;
     box-sizing: border-box;
     --delete-opacity: 0;
-    --delete-width: 0;
+    --delete-width: 0em;
     flex: 0 0 auto;
     position: absolute;
 }
@@ -91,7 +91,6 @@ todo-item .viewer,
 todo-item input[type=text] {
     display: inline-block;
     height: 1.5em;
-    border-radius: .75em;
     margin: 0;
     width: 100%;
     max-width: 100%;
@@ -104,18 +103,22 @@ todo-item input[type=text] {
     white-space: nowrap;
 }
 
-todo-item .viewer>a {
+todo-item .viewer a {
     color: var(--accent-bg-color);
 }
 
 todo-item .delete {
     color: rgba(0 0 0 / .5);
+    background-color: #fff;
     opacity: var(--delete-opacity);
-    width: var(--delete-width);
+    width: 1em;
     cursor: pointer;
     transition: .2s ease-in-out;
     -webkit-user-select: none;
     user-select: none;
+    text-indent: calc(1em - var(--delete-width));
+    margin-left: -1.5em;
+    /* margin-right: calc(-1em + var(--delete-width)); */
 }
 
 todo-item .delete:hover {
