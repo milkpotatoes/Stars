@@ -109,7 +109,6 @@ todo-item .viewer a {
 
 todo-item .delete {
     color: rgba(0 0 0 / .5);
-    background-color: #fff;
     opacity: var(--delete-opacity);
     width: 1em;
     cursor: pointer;
@@ -117,8 +116,7 @@ todo-item .delete {
     -webkit-user-select: none;
     user-select: none;
     text-indent: calc(1em - var(--delete-width));
-    margin-left: -1.5em;
-    /* margin-right: calc(-1em + var(--delete-width)); */
+    margin-left: calc(-1.5em + var(--delete-width));
 }
 
 todo-item .delete:hover {
