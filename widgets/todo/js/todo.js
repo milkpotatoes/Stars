@@ -31,6 +31,7 @@ class TodoList extends HTMLElement {
             todoItem = new TodoItem(item);
         }
         super.append(todoItem);
+        this.autoSortListener(todoItem);
         this.sortElement();
         return todoItem;
     }
@@ -54,6 +55,7 @@ class TodoList extends HTMLElement {
     }
     sortElement() {
         const siblings = this.querySelectorAll('todo-item');
+        console.log(siblings)
         if (siblings.length === 0) {
             return;
         }
@@ -92,11 +94,21 @@ class TodoList extends HTMLElement {
         }
     }
     setListener() {
+        const addTodoItem = () => {
+            const newItem = new TodoItem('');
+            this.autoSortListener(newItem);
+            this.addBtn.after(newItem);
+            newItem.input.focus();
+            newItem.input.addEventListener('keydown', newItemListerer);
+            newItem.input.addEventListener('blur', (e) => {
+                e.target.removeEventListener('keydown', newItemListerer);
+            }, { once: true });
+            this.sortElement();
+        }
         const newItemListerer = (e) => {
             if (e.key === 'Enter') {
                 if (e.target.value === CLEAR_DATA_COMMAND) {
-                    const resetAll = confirm('确定要清空所有数据? 该操作不可恢复');
-                    if (resetAll) {
+                    if (confirm('确定要清空所有数据? 该操作不可恢复')) {
                         setTimeout(() => {
                             localStorage.removeItem('TODO_LIST_DATA');
                             location.reload();
@@ -106,53 +118,32 @@ class TodoList extends HTMLElement {
                     e.target.removeEventListener('keydown', newItemListerer);
                     e.target.parentElement.remove();
                 } else if (e.target.value !== '') {
-                    const nextItem = new TodoItem('');
-                    this.addBtn.after(nextItem);
-                    nextItem.input.focus();
-                    nextItem.input.addEventListener('keydown', newItemListerer);
-                    nextItem.input.addEventListener('blur', (e) => {
-                        e.target.removeEventListener('keydown', newItemListerer);
-                        if (e.target.value === '') {
-                            e.target.parentElement.remove();
-                            this.showEmpty();
-                        }
-                    }, { once: true });
-                } else if (e.key === 'Escape' && e.target.value === '') {
-                    e.target.blur();
+                    addTodoItem();
                 }
+            } else if (e.key === 'Escape') {
+                e.target.blur();
+                this.sortElement();
             }
-            this.sortElement();
         }
         this.addBtn.addEventListener('click', () => {
             if (!this.addBtn.nextElementSibling || this.addBtn.nextElementSibling.name !== '') {
-                const newItem = new TodoItem('');
-                this.addBtn.after(newItem);
-                newItem.input.focus();
-                newItem.input.addEventListener('keydown', newItemListerer);
-                newItem.input.addEventListener('blur', (e) => {
-                    e.target.removeEventListener('keydown', newItemListerer);
-                    if (e.target.value === '') {
-                        e.target.parentElement.remove();
-                        this.showEmpty();
-                    }
-                }, { once: true });
-                this.sortElement();
+                addTodoItem();
             } else {
                 this.addBtn.nextElementSibling.input.focus();
             }
             this.showEmpty();
         });
-        this.addEventListener('change', (e) => {
+    }
+    autoSortListener(elem) {
+        const autoSaveSort = (e) => {
+            console.log(e)
             this.sortElement();
             this.saveData();
-        });
-        this.addEventListener('click', (e) => {
-            if (e.target.classList.contains('delete')) {
-                this.sortElement();
-                this.saveData();
-                this.showEmpty();
-            }
-        });
+            this.showEmpty();
+        }
+        elem.input.addEventListener('blur', autoSaveSort);
+        elem.delBtn.addEventListener('click', autoSaveSort);
+        elem.checkBox.addEventListener('change', autoSaveSort);
     }
     saveData() {
         const data = [];
@@ -225,6 +216,7 @@ class TodoItem extends HTMLElement {
         } else {
             this.viewer.style.display = '';
             this.input.style.display = 'none';
+            this.input.blur();
         }
     }
     setListener() {
@@ -239,6 +231,10 @@ class TodoItem extends HTMLElement {
         });
         this.input.addEventListener('blur', () => {
             this.showEditor(false);
+            if (this.name === '') {
+                this.input.blur();
+                this.remove();
+            }
         });
         this.viewer.addEventListener('focus', (e) => {
             if (!e.target.contains(e.explicitOriginalTarget)) {
@@ -250,6 +246,10 @@ class TodoItem extends HTMLElement {
             if (e.key === 'Escape') {
                 this.name = this.name;
                 this.showEditor(false);
+                if (this.name === '') {
+                    this.input.blur();
+                    this.remove();
+                }
             }
         });
         this.viewer.addEventListener('click', e => {
