@@ -13,6 +13,9 @@ import PagesIndicatorStatus from "./pagesIndicatorStatus.js";
 import ShortcutFilter from "./utils/shortcutsFilter.js";
 import SearchPanel from "./searchPanel.js";
 import { Settings } from "./settings.js";
+import { I18N } from "./utils/i18n.js";
+
+I18N.setLang(navigator.language + 's');
 
 const startProfile = new StartProfile();
 const customShortcutsCollection = new CustomShortcutsCollection(document.querySelector('.shortcuts'));

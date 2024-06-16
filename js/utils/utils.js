@@ -7,12 +7,13 @@
  */
 
 import { AlertDialog } from "./alertdialog.js";
+import { $i18n } from "./i18n.js";
 const colorfulImg = require('colorfulImg')
 
 export function alertMessage(msg) {
     new AlertDialog()
         .setMessage(msg)
-        .setPositiveButton('确定')
+        .setPositiveButton($i18n('{{button-text-confirm}}'))
         .show()
 }
 
@@ -29,16 +30,16 @@ export async function getPrimaryColor(image) {
 export function showMessage(msg = '', detail = null) {
     const dialog = new AlertDialog()
         .setMessage(msg)
-        .setPositiveButton('关闭')
+        .setPositiveButton($i18n('{{button-text-cancel}}'))
         .show();
     let showDetail = false;
     if (detail !== null) {
-        dialog.setNeturalButton('详细信息', () => {
+        dialog.setNeturalButton($i18n('{{dialog-message-detail}}'), () => {
             if(showDetail) {
-                dialog.setNeturalButton('详细信息');
+                dialog.setNeturalButton($i18n('{{dialog-message-detail}}'));
                 dialog.setMessage(msg);
             } else {
-                dialog.setNeturalButton('简要信息');
+                dialog.setNeturalButton($i18n('{{dialog-message-summary}}'));
                 dialog.setMessage(detail);
             }
             showDetail = !showDetail;

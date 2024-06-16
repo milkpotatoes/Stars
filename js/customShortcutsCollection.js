@@ -6,10 +6,11 @@
  * MIT Licence
  */
 
-import { ShortcutCollections } from "./utils/data.js";
 import { AlertDialog } from "./utils/alertdialog.js";
 import { fileToBase64 } from "./utils/utils.js";
+import { I18N } from "./utils/i18n.js";
 import { Shortcut } from "./utils/data.js";
+import { ShortcutCollections } from "./utils/data.js";
 import { showMessage } from "./utils/utils.js";
 
 export class CustomShortcutsCollection extends ShortcutCollections {
@@ -93,25 +94,25 @@ export class CustomShortcutsCollection extends ShortcutCollections {
 .icon{grid-area:i;width:76px;height:76px;background:rgba(0 0 0 / .1);object-fit:contain;border-radius:8px;padding:8px;box-sizing:border-box}label{grid-area: w;text-align:center}input[type=checkbox]{vertical-align: text-top}</style> 
 <div class="main-view"> <img class="icon" src="src/image_FILL0_wght400_GRAD0_opsz24.svg"> 
 <input type="file" style="display: none;" class="icon" accept="image/*"> 
-<input type="text" placeholder="名称" class="name">
-<input type="text" placeholder="链接" class="url">
-<input type="text" placeholder="描述" class="desc">
-<label><input type="checkbox" class="iswidget" id="iswidget">小部件</label>
+<input type="text" placeholder="{{text-name}}" class="name">
+<input type="text" placeholder="{{text-link}}" class="url">
+<input type="text" placeholder="{{text-description}}" class="desc">
+<label><input type="checkbox" class="iswidget" id="iswidget">{{text-widget}}</label>
 </div>`;
         const collection = this;
         const dialog = new AlertDialog()
-            .setTitle(name === '' ? '添加' : '修改')
-            .setView(customView)
-            .setPositiveButton('确定', function () {
+            .setTitle(I18N.i18nString(name === '' ? '{{dialog-title-add-shortcut}}' : '{{dialog-title-edit-shortcut}}'))
+            .setView(I18N.i18nString(customView))
+            .setPositiveButton(I18N.i18nString('{{button-text-confirm}}'), function () {
                 const _name = this.querySelector("input.name").value;
                 const _icon = this.querySelector("img.icon").src;
                 const _url = this.querySelector("input.url").value;
                 const _desc = this.querySelector("input.desc").value;
                 const _type = this.querySelector("input.iswidget").checked ? Shortcut.SHORTCUT_TYPE_WIDGET : Shortcut.SHORTCUT_TYPE_SHORTCUT;
                 if (_name === '') {
-                    showMessage('名称不能为空')
+                    showMessage(I18N.i18nString('{{text-shortcut-empty-name}}'))
                 } else if (_url === '') {
-                    showMessage('链接不能为空')
+                    showMessage(I18N.i18nString('{{text-shortcut-empty-link}}'))
                 } else {
                     try {
                         new URL(_url);
@@ -121,29 +122,29 @@ export class CustomShortcutsCollection extends ShortcutCollections {
                         collection.saveLinks();
                         this.close();
                     } catch (e) {
-                        showMessage('链接格式错误', e.toString());
+                        showMessage(I18N.i18nString('{{text-shortcut-invalid-link}}'), e.toString());
                     }
                 }
                 return true;
             })
-            .setNeturalButton('获取网站icon', function () {
+            .setNeturalButton(I18N.i18nString('{{text-get-favicon}}'), function () {
                 const url = this.querySelector("input.url").value;
                 const icon = this.querySelector("img.icon");
                 const prev_icon = icon.src;
                 try {
                     const url1 = new URL(url).origin + '/favicon.ico';
                     icon.onerror = (err) => {
-                        showMessage('获取失败，请手动选择图标', err.toString());
+                        showMessage(I18N.i18nString('{{text-get-favicon-faild}}'), err.toString());
                         icon.src = prev_icon;
                         icon.onerror = undefined;
                     };
                     icon.src = url1;
                 } catch (err) {
-                    showMessage('请输入正确的链接后再试', err.toString());
+                    showMessage(I18N.i18nString('{{text-faild-to-parse-url}}'), err.toString());
                 }
                 return true;
             })
-            .setNegativeButton('取消')
+            .setNegativeButton(I18N.i18nString('{{button-text-cancel}}'))
             .show();
         const preview = dialog.querySelector('img.icon');
         const file_select = dialog.querySelector('input.icon');
@@ -189,7 +190,7 @@ export class CustomShortcutsCollection extends ShortcutCollections {
     projectIndex() {
         localStorage.AddedProjectIndex = new Date().getTime();
         return {
-            name: '项目主页',
+            name: I18N.i18nString('{{home-of-project}}'),
             url: 'https://gitee.com/milkpotatoes/stars',
             icon: 'src/start-512x512.png',
             desc: '个性化新建标签页',

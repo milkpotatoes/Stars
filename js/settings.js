@@ -27,6 +27,9 @@ export class Settings {
     static WALLPAPER_STORAGE_KEY = 'CURRENT_WALLPAPTER';
     static _cache_wallpaper = null;
     static _current_wallpaper = null;
+    static _settings_list = {
+        wallpaper: this.setWallpaper,
+    }
     static async setWallpaper() {
         const wallpaperView = document.createElement('div');
         const fileChooser = document.createElement('input');
@@ -190,4 +193,15 @@ export class Settings {
                 document.documentElement.style.backgroundColor = `rgb(${e.r}, ${e.g}, ${e.b})`;
             });
     }
+    static showSettingsPanel() {
+        const dialog = new AlertDialog()
+            .setTitle('设置')
+            .setPositiveButton('确定', () => {
+                return false;
+            })
+            .show();
+        const settingsList = {}
+    }
 }
+
+Settings.showSettingsPanel();
