@@ -3,16 +3,16 @@
  * A simple index page
  * https://gitee.com/milkpotatoes/stars
  * Copyright (c) 2024 milkpotatoes
- * MIT Licence
+ * MIT License
  */
 
-const ALERT_STYLE = ':host{color:#ddd;display:block;position:fixed;top:0;left:0;right:0;bottom:0;--primary-color:#4082ff;--accent-color:#4f8cff;--background-color:#4082ff;--default-transation:ease-in-out .2s;font-family:Roboto,Noto,Helvetica,Arial,sans-serif;z-index:10;opacity:1!important}.overlay{width:100%;height:100%;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0 0 0 / .2);transition:var(--default-transation)}.dismiss.overlay{opacity:0}.dialog{background:rgba(255 255 255 / .7);position:fixed;transform:translate(-50%,-50%);top:50%;left:50%;width:calc(100% - 96px);max-width:560px;z-index:1;box-shadow:0 16px 20px -8px rgba(0 0 0 / .5);border-radius:16px;padding:24px;-webkit-backdrop-filter:blur(64px);backdrop-filter:blur(64px);transition:var(--default-transation)}.dismiss.dialog{top:60%;left:50%;scale:.8;opacity:0;transform:translate(-62.5%,-62.5%)}.title{margin:0 0 16px 0;font-size:1.1em}.message{font-size:.9em;margin:0 0 16px 0;line-height:1.6em;color:#555}.buttons{display:flex;gap:8px}.buttons>.button{padding:0 16px;box-sizing:border-box;height:36px;border:none;outline:0;background:0 0;transition:ease-in-out .2s;border-radius:18px;color:var(--background-color);font-size:1em;min-width:56px;width:max-content;font-weight:700;box-shadow:none}.buttons>.button:hover{background:rgba(0 0 0 / .1)}.buttons>.button:active{background:rgba(0 0 0 / .2)}.buttons>.space{flex:1;order:1}.positive-button{order:3}.negative-button{order:2}.netural-button{order:0}';
+const ALERT_STYLE = ':host{color:#ddd;display:block;position:fixed;top:0;left:0;right:0;bottom:0;--primary-color:#4082ff;--accent-color:#4f8cff;--background-color:#4082ff;--default-transition:ease-in-out .2s;font-family:Roboto,Noto,Helvetica,Arial,sans-serif;z-index:10;opacity:1!important}.overlay{width:100%;height:100%;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0 0 0 / .2);transition:var(--default-transition)}.dismiss.overlay{opacity:0}.dialog{background:rgba(255 255 255 / .7);position:fixed;transform:translate(-50%,-50%);top:50%;left:50%;width:calc(100% - 96px);max-width:560px;z-index:1;box-shadow:0 16px 20px -8px rgba(0 0 0 / .5);border-radius:16px;padding:24px;-webkit-backdrop-filter:blur(64px);backdrop-filter:blur(64px);transition:var(--default-transition)}.dismiss.dialog{top:60%;left:50%;scale:.8;opacity:0;transform:translate(-62.5%,-62.5%)}.title{margin:0 0 16px 0;font-size:1.1em}.message{font-size:.9em;margin:0 0 16px 0;line-height:1.6em;color:#555}.buttons{display:flex;gap:8px}.buttons>.button{padding:0 16px;box-sizing:border-box;height:36px;border:none;outline:0;background:0 0;transition:ease-in-out .2s;border-radius:18px;color:var(--background-color);font-size:1em;min-width:56px;width:max-content;font-weight:700;box-shadow:none}.buttons>.button:hover{background:rgba(0 0 0 / .1)}.buttons>.button:active{background:rgba(0 0 0 / .2)}.buttons>.space{flex:1;order:1}.positive-button{order:3}.negative-button{order:2}.neutral-button{order:0}';
 const ALERT_STYLE_URL = URL.createObjectURL(new Blob([ALERT_STYLE]));
-const WIDGETS_STYLE = `:root{--primary-color:#4082ff;--accent-color:#4f8cff;--background-color:rgba(0 0 0 / .1);--default-transation:ease-in-out .2s}
+const WIDGETS_STYLE = `:root{--primary-color:#4082ff;--accent-color:#4f8cff;--background-color:rgba(0 0 0 / .1);--default-transition:ease-in-out .2s}
 *{color:#333}
 ::selection{background-color:var(--accent-color);color:#fff}
 input::placeholder,select::placeholder,textarea::placeholder{color:#555}
-input,select,textarea{outline:0;border:none;width:100%;font-size:1em;padding:0 4px;transition:var(--default-transation);background:rgba(0 0 0 / .1);background-position:50% 100%;background-size:0 1px;box-sizing:border-box;resize:none;font-family:Roboto,Noto,Helvetica,Arial,sans-serif;min-height:32px;line-height:16px;height:32px;border-radius:8px;padding:0 12px}
+input,select,textarea{outline:0;border:none;width:100%;font-size:1em;padding:0 4px;transition:var(--default-transition);background:rgba(0 0 0 / .1);background-position:50% 100%;background-size:0 1px;box-sizing:border-box;resize:none;font-family:Roboto,Noto,Helvetica,Arial,sans-serif;min-height:32px;line-height:16px;height:32px;border-radius:8px;padding:0 12px}
 input[disabled],select[disabled],textarea[disabled]{cursor:not-allowed;background:0 0!important;color:#555}
 fieldset{border:none;border-radius:8px;display:inline-flex;padding:4px;background:rgba(0 0 0 / .05);gap:4px;flex-direction:row;position:relative}
 fieldset>legend{position:absolute;width:max-content;transform:translate(-100%,0);padding-right:1em;color:var(--primary-color);font-weight:700}
@@ -95,7 +95,7 @@ class AlertDialogElement extends HTMLElement {
 
     setTitle(title) {
         if (this.status === AlertDialog.DIALOG_STATUS.CLOSED) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         this._title.style.display = '';
         this._title.textContent = title.replace(/\n/g, ' ');
@@ -103,7 +103,7 @@ class AlertDialogElement extends HTMLElement {
 
     setView(view) {
         if (this.status === AlertDialog.DIALOG_STATUS.CLOSED) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
 
         this._message.style.display = '';
@@ -161,28 +161,28 @@ class AlertDialogElement extends HTMLElement {
 
     setPositiveButton(button, listener) {
         if (this.status === AlertDialog.DIALOG_STATUS.CLOSED) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         this._setButton(button, 'positive-button', listener);
     };
 
     setNegativeButton(button, listener) {
         if (this.status === AlertDialog.DIALOG_STATUS.CLOSED) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         this._setButton(button, 'negative-button', listener);
     };
 
-    setNeturalButton(button, listener) {
+    setNeutralButton(button, listener) {
         if (this.status === AlertDialog.DIALOG_STATUS.CLOSED) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
-        this._setButton(button, 'netural-button', listener);
+        this._setButton(button, 'neutral-button', listener);
     };
 
     setModal(dismissOnClickOverlay) {
         if (this.status === AlertDialog.DIALOG_STATUS.CLOSED) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         this._modalDialog = dismissOnClickOverlay;
     };
@@ -218,7 +218,7 @@ class AlertDialogElement extends HTMLElement {
 
     dismiss() {
         if (this.status === AlertDialog.DIALOG_STATUS.CLOSED) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
 
         this.status = AlertDialog.DIALOG_STATUS.DISMISSING;
@@ -240,11 +240,11 @@ class AlertDialogElement extends HTMLElement {
 
     show() {
         if (this.status === AlertDialog.DIALOG_STATUS.CLOSED) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
 
         if (document.body.contains(this)) {
-            throw (new Error('This dislog is already showed in window'));
+            throw (new Error('This dialog is already showed in window'));
         };
 
         this.status = AlertDialog.DIALOG_STATUS.OPENING;
@@ -274,7 +274,7 @@ export class AlertDialog {
     #onCloseCallback;
     #onShowCallback;
     #onDismissCallback;
-    #destoryOnDismiss = true;
+    #destroyOnDismiss = true;
 
     get style() {
         return this.#dialog_el.style;
@@ -300,7 +300,7 @@ export class AlertDialog {
      */
     setTitle(title) {
         if (this.#dialog_el === null) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         this.#dialog_el.setTitle(title);
         return this;
@@ -314,7 +314,7 @@ export class AlertDialog {
      */
     setMessage(message) {
         if (this.#dialog_el === null) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         this.#dialog_el.setView(message.replace(/\n/g, '<br />'));
         return this;
@@ -328,7 +328,7 @@ export class AlertDialog {
      */
     setView(view) {
         if (this.#dialog_el === null) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         this.#dialog_el.setView(view);
         return this;
@@ -346,7 +346,7 @@ export class AlertDialog {
      */
     setPositiveButton(button, listener) {
         if (this.#dialog_el === null) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         this.#dialog_el.setPositiveButton(button, listener);
         return this;
@@ -360,7 +360,7 @@ export class AlertDialog {
      */
     setNegativeButton(button, listener) {
         if (this.#dialog_el === null) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         this.#dialog_el.setNegativeButton(button, listener);
         return this;
@@ -372,29 +372,29 @@ export class AlertDialog {
      * @param {(event?) => boolean} listener 
      * @returns {AlertDialog}
      */
-    setNeturalButton(button, listener) {
+    setNeutralButton(button, listener) {
         if (this.#dialog_el === null) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
-        this.#dialog_el.setNeturalButton(button, listener);
+        this.#dialog_el.setNeutralButton(button, listener);
         return this;
     };
 
     /**
      * Set `true` to prevent closing dialog by touch overlay
-     * @param {boolean} dissmissOnClickOverlay 
+     * @param {boolean} dismissOnClickOverlay 
      * @returns {AlertDialog}
      */
     setModal(dismissOnClickOverlay) {
         if (this.#dialog_el === null) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         this.#dialog_el.setModal(dismissOnClickOverlay);
         return this;
     };
 
-    setDestoryOnDismiss(destoryOnDismiss = true) {
-        this.#destoryOnDismiss = destoryOnDismiss;
+    setDestroyOnDismiss(destroyOnDismiss = true) {
+        this.#destroyOnDismiss = destroyOnDismiss;
         return this;
     }
 
@@ -405,7 +405,7 @@ export class AlertDialog {
      */
     onShow(callback) {
         if (this.#dialog_el === null) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         if (typeof callback === 'function') {
             this.#onShowCallback = callback.bind(this);
@@ -420,7 +420,7 @@ export class AlertDialog {
      */
     onClose(callback) {
         if (this.#dialog_el === null) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         if (typeof callback === 'function') {
             this.#onCloseCallback = callback.bind(this);
@@ -435,7 +435,7 @@ export class AlertDialog {
      */
     onDismiss(callback) {
         if (this.#dialog_el === null) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         if (typeof callback === 'function') {
             this.#onDismissCallback = callback.bind(this);
@@ -449,7 +449,7 @@ export class AlertDialog {
      */
     show() {
         if (this.#dialog_el === null) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         this.#dialog_el.status = AlertDialog.DIALOG_STATUS.OPENING;
         if (typeof this.#onShowCallback === 'function') {
@@ -465,7 +465,7 @@ export class AlertDialog {
      */
     close() {
         if (this.#dialog_el === null) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         this.#dialog_el.status = AlertDialog.DIALOG_STATUS.CLOSING;
         if (typeof this.#onCloseCallback === 'function') {
@@ -485,13 +485,13 @@ export class AlertDialog {
      */
     dismiss() {
         if (this.#dialog_el === null) {
-            throw (new Error('This dislog has been destoryed'));
+            throw (new Error('This dialog has been destroyed'));
         };
         this.#dialog_el.status = AlertDialog.DIALOG_STATUS.DISMISSING;
         if (typeof this.#onDismissCallback === 'function') {
             this.#onDismissCallback();
         };
-        if (this.#destoryOnDismiss) {
+        if (this.#destroyOnDismiss) {
             this.close();
         } else {
             this.#dialog_el?.dismiss();

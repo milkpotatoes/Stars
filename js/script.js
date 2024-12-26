@@ -3,7 +3,7 @@
  * A simple index page
  * https://gitee.com/milkpotatoes/stars
  * Copyright (c) 2024 milkpotatoes
- * MIT Licence
+ * MIT License
  */
 
 import { StartProfile } from "./utils/data.js";
@@ -23,7 +23,7 @@ const shortcutFilter = new ShortcutFilter(customShortcutsCollection);
 const searchEngineManager = new SearchEngineManager(startProfile);
 new SearchPanel(customShortcutsCollection, searchEngineManager, startProfile);
 
-Settings.showWallapaer();
+Settings.showWallpaper();
 
 searchEngineManager.modifySearchEngine(startProfile.SearchEngine);
 
@@ -74,7 +74,7 @@ function expandMoreLinks() {
     let scroll_bottom = 0;
     let executing = false;
     const appRoot = document.querySelector('#app');
-    const mouseWhellEvent = (y) => {
+    const mouseWheelEvent = (y) => {
         deltaY += y;
         if (appRoot.classList.contains('expand')) {
             pagesIndicatorStatus.show();
@@ -122,8 +122,8 @@ function expandMoreLinks() {
             deltaY = 0;
         }, 200);
     };
-    appRoot.addEventListener('mousewheel', e => { mouseWhellEvent(e.deltaY) });
-    appRoot.addEventListener('DOMMouseScroll', e => { mouseWhellEvent(e.detail * 50) });
+    appRoot.addEventListener('mousewheel', e => { mouseWheelEvent(e.deltaY) });
+    appRoot.addEventListener('DOMMouseScroll', e => { mouseWheelEvent(e.detail * 50) });
 };
 
 document.addEventListener('keydown', e => {

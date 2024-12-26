@@ -3,7 +3,7 @@
  * A simple index page
  * https://gitee.com/milkpotatoes/stars
  * Copyright (c) 2024 milkpotatoes
- * MIT Licence
+ * MIT License
  */
 
 const SHORTCUTS_COLLECTION_CONTAINER = document.querySelector('.shortcuts');

@@ -3,7 +3,7 @@
  * A simple index page
  * https://gitee.com/milkpotatoes/stars
  * Copyright (c) 2024 milkpotatoes
- * MIT Licence
+ * MIT License
  */
 
 export class AlertDialog {
@@ -61,37 +61,37 @@ export class AlertDialog {
      * @param {(event?: MouseEvent) => boolean} listener 
      * @returns {AlertDialog}
      */
-    setNeturalButton(button: string, listener: (event?: MouseEvent) => boolean): AlertDialog;
+    setNeutralButton(button: string, listener: (event?: MouseEvent) => boolean): AlertDialog;
 
     /**
      * Set `true` to prevent closing dialog by touch overlay
-     * @param {boolean} dissmissOnClickOverlay 
+     * @param {boolean} dismissOnClickOverlay 
      * @returns {AlertDialog}
      */
     setModal(dismissOnClickOverlay: boolean): AlertDialog;
 
     /**
-     * set destory this AlertDialog after it dissmised or not
-     * @param {boolean} destoryOnDismiss 
+     * set destroy this AlertDialog after it dismissed or not
+     * @param {boolean} destroyOnDismiss 
      */
-    setDestoryOnDismiss(destoryOnDismiss: boolean): AlertDialog;
+    setDestroyOnDismiss(destroyOnDismiss: boolean): AlertDialog;
 
     /**
-     * this callback will exectued when the dialog is opening;
+     * this callback will executed when the dialog is opening;
      * @param {(messageView: HTMLElement) => void} callback 
      * @returns {AlertDialog}
      */
     onShow(callback: (messageView: HTMLElement) => void): AlertDialog;
 
     /**
-     * this callback will exectued when the dialog is closing;
+     * this callback will executed when the dialog is closing;
      * @param {() => void} callback 
      * @returns {AlertDialog} 
      */
     onClose(callback: () => void): AlertDialog;
 
     /**
-     * this callback will exectued when the dialog is dismissing;
+     * this callback will executed when the dialog is dismissing;
      * @param {() => void} callback 
      * @returns {AlertDialog}
      */
@@ -104,14 +104,14 @@ export class AlertDialog {
     show(): AlertDialog;
 
     /**
-     * Close dialog, it will destory this dialog;
+     * Close dialog, it will destroy this dialog;
      * @returns {void}
      */
     close(): void;
 
     /**
      * hide dialog, you can reopen it by `AlertDialog.open()`,
-     * if DestoryOnDimiss is disabled.
+     * if DestroyOnDismiss is disabled.
      * @returns {void}
      */
     dismiss(): void;

@@ -3,7 +3,7 @@
  * A simple index page
  * https://gitee.com/milkpotatoes/stars
  * Copyright (c) 2024 milkpotatoes
- * MIT Licence
+ * MIT License
  */
 
 import { AlertDialog } from "./utils/alertdialog.js";
@@ -18,12 +18,12 @@ const SEARCH_ENGINE_MANAGE = SEARCH_ENGINE_SELECT.querySelector('.manage-search-
 const SEARCH_ENGINE_TEMPLATE = SEARCH_ENGINE_SELECT.querySelector('template');
 
 function discordChanges() {
-    return new Promise((reslove, reject) => {
+    return new Promise((resolve, reject) => {
         new AlertDialog()
             .setTitle('提示')
             .setMessage('您当前未保存的设置，仍然退出吗？')
             .setPositiveButton('确定', () => {
-                reslove('ok');
+                resolve('ok');
             })
             .setNegativeButton('取消', () => {
                 reject('canceled');
@@ -212,7 +212,7 @@ export class SearchEngineManager {
     }
 
     editSearchIcon(icon = '', logo = '', url = '', editable = true) {
-        return new Promise((reslove, reject) => {
+        return new Promise((resolve, reject) => {
             const customView = `<style> .material-icon { font-family: "material-icon"; } .container { display: grid; grid-template-columns: 1fr 32px 96px 1fr; grid-template-rows: 128px 32px; gap: 16px; grid-template-areas: "l l l l" ". i b ."; align-items: center; justify-items: center; } .icon { width: 20px; height: 20px; user-select: none; } span.icon { width: 32px; height: 32px; font-size: 20px; line-height: 32px; border-radius: 4px; text-align: center; transition: ease-in-out .2s; } div.icon { grid-area: i; width: 32px; height: 32px; user-select: none; background-image: url(../src/image_FILL0_wght400_GRAD0_opsz24.svg); border-radius: 50%; overflow: hidden; padding: 4px; } .logo { grid-area: l; color: rgba(0 0 0 / .4); font-size: 2em; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 16px; } .logo, div.icon { box-sizing: border-box; background: rgba(0 0 0 / .15) center no-repeat; background-size: contain; background-origin: content-box; } button.use-favicon { grid-area: b; } </style> <div class="container"> <input type="file" accept="image/*" style="display: none;" /> <div class="logo">点击设置Logo</div> <div class="icon"></div><button class="use-favicon">使用favicon</button> </div>`;
             new AlertDialog()
                 .setTitle((editable ? '修改' : '查看') + 'Logo')
@@ -221,7 +221,7 @@ export class SearchEngineManager {
                     const view = this.getView();
                     const logo_view = view.querySelector('.logo').style.backgroundImage.match(/url\("(.+)"\)/)?.[1] ?? '';
                     const icon_view = view.querySelector('div.icon').style.backgroundImage.match(/url\("(.+)"\)/)?.[1] ?? '';
-                    reslove([logo_view, icon_view]);
+                    resolve([logo_view, icon_view]);
                 })
                 .setNegativeButton('取消')
                 .onShow(function (e) {
@@ -269,7 +269,7 @@ export class SearchEngineManager {
                     }
                 })
                 .onClose(() => {
-                    reject('cancled');
+                    reject('canceled');
                 })
                 .show();
         });
@@ -331,11 +331,11 @@ export class SearchEngineManager {
 
         const buttonListener = function () {
             const inputs = this.querySelectorAll('.add-item input');
-            let notsaved = false;
+            let notSaved = false;
             inputs.forEach(element => {
-                notsaved = notsaved || element.value !== '';
+                notSaved = notSaved || element.value !== '';
             });
-            if (notsaved) {
+            if (notSaved) {
                 discordChanges()
                     .then(() => this.close())
                     .catch(() => true);
@@ -344,7 +344,7 @@ export class SearchEngineManager {
             return false;
         };
 
-        const cancleChanges = function () {
+        const cancelChanges = function () {
             const inputs = this.querySelectorAll('.custom input');
             let notSaved = false;
             inputs.forEach(element => {
@@ -366,12 +366,12 @@ export class SearchEngineManager {
                 const inputs = element.querySelectorAll('input');
                 const engine = this_.startProfile.getSearchEngine(parseInt(element.getAttribute('data')));
                 inputs.forEach(input => {
-                    const clst = input.classList;
-                    if (clst.contains('name')) {
+                    const classList = input.classList;
+                    if (classList.contains('name')) {
                         engine.name = input.value;
-                    } else if (clst.contains('url')) {
+                    } else if (classList.contains('url')) {
                         engine.url = input.value;
-                    } else if (clst.contains('index')) {
+                    } else if (classList.contains('index')) {
                         engine.index = input.value;
                     }
                     if (!SearchEngineManager.checkEngine(engine, false) && !illegal.includes(engine)) {
@@ -394,7 +394,7 @@ export class SearchEngineManager {
             .setTitle('管理搜索引擎')
             .setView(customView)
             .setPositiveButton('确定', saveChanges)
-            .setNegativeButton('关闭', cancleChanges)
+            .setNegativeButton('关闭', cancelChanges)
             .setModal(true)
             .onShow((view) => {
                 manageSearchEnginesDialog(view, this_);
