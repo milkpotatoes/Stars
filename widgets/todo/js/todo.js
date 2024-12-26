@@ -277,7 +277,7 @@ if (localStorage.TODO_LIST_DATA === undefined) {
         'display:inline-flex;width:1rem;height:1em;justify-content:center;' +
         'padding:.1rem 0;color:#fff">{add}</span> 新建待办事项',
         '使用\\*\\*设置**粗体**\\*\\*',
-        '使用\\*\\*\\*设置***斜体***\\*\\*\\*',
+        '使用\\*设置*斜体*\\*',
         '使用\\~\\~设置~~删除线~~\\~\\~',
         '使用\\[添加[链接](#)\\]\\(#\\)',
         '使用\\{check\}添加图标{check}',
