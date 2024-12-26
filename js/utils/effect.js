@@ -3,7 +3,7 @@
  * A simple index page
  * https://gitee.com/milkpotatoes/stars
  * Copyright (c) 2024 milkpotatoes
- * MIT Licence
+ * MIT License
  */
 
 import { fileToBase64 } from "./utils.js";
@@ -35,12 +35,12 @@ export default class WallpaperEffect {
     }
     setSrc(img) {
         this.loaded = null;
-        return new Promise((reslove, reject) => {
+        return new Promise((resolve, reject) => {
             this.image.onload = async () => {
                 this.loaded = true;
                 this.loadError = null;
                 await this.resetCanvas();
-                reslove('ok');
+                resolve('ok');
             }
             this.image.onerror = () => {
                 reject('error');

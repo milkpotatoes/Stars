@@ -3,7 +3,7 @@
  * A simple index page
  * https://gitee.com/milkpotatoes/stars
  * Copyright (c) 2024 milkpotatoes
- * MIT Licence
+ * MIT License
  */
 
 import { ShortcutCollections } from "./utils/data.js";
@@ -49,7 +49,7 @@ export class CustomShortcutsCollection extends ShortcutCollections {
             }
         };
         this.saveLinks();
-        this.setEnevtListener();
+        this.setEventListener();
     };
     refreshPageIndicator(pages = this.pagesCount) {
         const pagesIndicator = this._elm.querySelector('.pages-indicator');
@@ -96,7 +96,7 @@ export class CustomShortcutsCollection extends ShortcutCollections {
 <input type="text" placeholder="名称" class="name">
 <input type="text" placeholder="链接" class="url">
 <input type="text" placeholder="描述" class="desc">
-<label><input type="checkbox" class="iswidget" id="iswidget">小部件</label>
+<label><input type="checkbox" class="is-widget">小部件</label>
 </div>`;
         const collection = this;
         const dialog = new AlertDialog()
@@ -107,7 +107,7 @@ export class CustomShortcutsCollection extends ShortcutCollections {
                 const _icon = this.querySelector("img.icon").src;
                 const _url = this.querySelector("input.url").value;
                 const _desc = this.querySelector("input.desc").value;
-                const _type = this.querySelector("input.iswidget").checked ? Shortcut.SHORTCUT_TYPE_WIDGET : Shortcut.SHORTCUT_TYPE_SHORTCUT;
+                const _type = this.querySelector("input.is-widget").checked ? Shortcut.SHORTCUT_TYPE_WIDGET : Shortcut.SHORTCUT_TYPE_SHORTCUT;
                 if (_name === '') {
                     showMessage('名称不能为空')
                 } else if (_url === '') {
@@ -126,7 +126,7 @@ export class CustomShortcutsCollection extends ShortcutCollections {
                 }
                 return true;
             })
-            .setNeturalButton('获取网站icon', function () {
+            .setNeutralButton('获取网站icon', function () {
                 const url = this.querySelector("input.url").value;
                 const icon = this.querySelector("img.icon");
                 const prev_icon = icon.src;
@@ -151,7 +151,7 @@ export class CustomShortcutsCollection extends ShortcutCollections {
         dialog.querySelector('.name').value = name;
         dialog.querySelector('.url').value = url;
         dialog.querySelector('.desc').value = desc;
-        dialog.querySelector('.iswidget').checked = type === Shortcut.SHORTCUT_TYPE_WIDGET;
+        dialog.querySelector('.is-widget').checked = type === Shortcut.SHORTCUT_TYPE_WIDGET;
         preview.addEventListener('click', () => {
             file_select.click();
         });
@@ -237,7 +237,7 @@ export class CustomShortcutsCollection extends ShortcutCollections {
         }, 200);
     };
 
-    setEnevtListener() {
+    setEventListener() {
         this._elm.addEventListener('dragover', e => {
             e.preventDefault();
             const dragItem = document.querySelector('.shortcut.dragging');

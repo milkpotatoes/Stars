@@ -3,7 +3,7 @@
  * A simple index page
  * https://gitee.com/milkpotatoes/stars
  * Copyright (c) 2024 milkpotatoes
- * MIT Licence
+ * MIT License
  */
 
 import { SEARCH_ENGINES, STATIC_SOURCE } from "../resource.js";
@@ -25,7 +25,7 @@ class Widget {
         easing: 'ease-in-out',
     };
     static WIDGET_STATUS_HIDDEN = 0;
-    static WIDGET_STATUS_HIDDING = 1;
+    static WIDGET_STATUS_HIDING = 1;
     static WIDGET_STATUS_SHOWN = 2;
     static WIDGET_STATUS_SHOWING = 3;
 
@@ -141,7 +141,7 @@ class Widget {
             this.popup(this.pos.x * radio + e.screenX - e.clientX * radio,
                 this.pos.y * radio + e.screenY - e.clientY * radio);
             this.hide();
-            this.destory();
+            this.destroy();
         });
         this.width = w;
         this.height = h;
@@ -210,7 +210,7 @@ class Widget {
             return;
         }
         document.removeEventListener('click', this.autoClose);
-        this.status = Widget.WIDGET_STATUS_HIDDING;
+        this.status = Widget.WIDGET_STATUS_HIDING;
         this.root.style.filter = Widget.ANIMATE_START_STATE.filter;
         this.root.animate([Widget.ANIMATE_END_STATE, Widget.ANIMATE_START_STATE], Widget.ANIMATE_OPTIONS);
         this.root.animate([
@@ -239,7 +239,7 @@ class Widget {
         }
         this.url = url;
     }
-    destory() {
+    destroy() {
         this.root.remove();
         this.elem.removeAttribute('src')
     }
@@ -273,7 +273,7 @@ export class Shortcut {
             }
         } else {
             if (this.widget) {
-                this.widget.destory();
+                this.widget.destroy();
                 this.widget = null;
             }
         }
@@ -415,7 +415,7 @@ export class Shortcut {
         this.parent = collection;
     }
 
-    open(mousebutton = 1) {
+    open(mouseButton = 1) {
         if (this.url) {
             for (let i = 0; i < this.parent.size() - 1; i++) {
                 const widget = this.parent.at(i).widget;
@@ -430,17 +430,17 @@ export class Shortcut {
                     if (this.widget === null) {
                         this.widget = new Widget(this.name, this.url, w * 2 + 24, h * 2 + 24);
                     }
-                    if (mousebutton === 1) {
+                    if (mouseButton === 1) {
                         this.widget.show(x + w / 2, y + h / 2);
-                    } else if (mousebutton === 4) {
+                    } else if (mouseButton === 4) {
                         this.widget.popup(x, y);
                     }
                     break;
                 case Shortcut.SHORTCUT_TYPE_SHORTCUT:
                 default:
-                    if (mousebutton === 1) {
+                    if (mouseButton === 1) {
                         window.open(this.url, '_top');
-                    } else if (mousebutton === 4) {
+                    } else if (mouseButton === 4) {
                         window.open(this.url, '_blank');
                     }
                     break;
@@ -549,7 +549,7 @@ export class StartProfile {
     };
 
     DisabledSearchEngine = [];
-    saveDisanledSearchEngine() {
+    saveDisabledSearchEngine() {
         localStorage.DisabledSearchEngine = JSON.stringify(this.DisabledSearchEngine);
     };
     disableInnerEngine(id) {
@@ -563,19 +563,19 @@ export class StartProfile {
         }
         if (id >= this.INNER_SEARCH_ENGINES.length) {
             console.log(id)
-            throw new Error('engine not exsist')
+            throw new Error('engine not exists')
         }
         if (id === this.SearchEngine) {
             throw new Error('engine is default engine')
         }
         this.DisabledSearchEngine.push(id);
-        this.saveDisanledSearchEngine();
+        this.saveDisabledSearchEngine();
     };
     enableInnerEngine(id) {
         const loc = this.DisabledSearchEngine.indexOf(id);
         if (loc >= 0 && id < this.INNER_SEARCH_ENGINES.length) {
             this.DisabledSearchEngine.splice(loc, 1);
-            this.saveDisanledSearchEngine();
+            this.saveDisabledSearchEngine();
         }
     }
     eachEngine(callback, showDisabled = true) {
@@ -628,11 +628,11 @@ export class StartProfile {
                 this.DisabledSearchEngine = JSON.parse(localStorage.DisabledSearchEngine);
             } catch {
                 this.DisabledSearchEngine = [];
-                this.saveDisanledSearchEngine();
+                this.saveDisabledSearchEngine();
             }
         } else {
             this.DisabledSearchEngine = [];
-            this.saveDisanledSearchEngine();
+            this.saveDisabledSearchEngine();
         }
         if (localStorage.CustomSearchEngine !== undefined) {
             try {

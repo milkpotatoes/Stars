@@ -3,7 +3,7 @@
  * A simple index page
  * https://gitee.com/milkpotatoes/stars
  * Copyright (c) 2024 milkpotatoes
- * MIT Licence
+ * MIT License
  */
 
 const LARGE_STORAGE_DB_KEY = 'largeStorage';
@@ -41,9 +41,9 @@ export default class LargeStorage {
         } catch {
             req = store.add({ key: key, value: value });
         }
-        new Promise((reslove, reject) => {
+        new Promise((resolve, reject) => {
             req.onsuccess = (event) => {
-                reslove(event.target.result);
+                resolve(event.target.result);
             };
             req.onerror = (event) => {
                 reject(new Error(event));
@@ -58,11 +58,11 @@ export default class LargeStorage {
     }
 
     static async getData(key) {
-        return new Promise(async (reslove, reject) => {
+        return new Promise(async (resolve, reject) => {
             const store = await initDB();
             const req = store.get(key);
             req.onsuccess = (event) => {
-                reslove(event.target.result?.value);
+                resolve(event.target.result?.value);
             };
             req.onerror = (event) => {
                 reject(new Error(event));

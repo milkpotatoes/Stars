@@ -3,7 +3,7 @@
  * A simple index page
  * https://gitee.com/milkpotatoes/stars
  * Copyright (c) 2024 milkpotatoes
- * MIT Licence
+ * MIT License
  */
 
 import { AlertDialog } from "./utils/alertdialog.js";
@@ -24,7 +24,7 @@ class WallpaperConfig {
 }
 
 export class Settings {
-    static WALLPAPER_STORAGE_KEY = 'CURRENT_WALLPAPTER';
+    static WALLPAPER_STORAGE_KEY = 'CURRENT_WALLPAPER';
     static _cache_wallpaper = null;
     static _current_wallpaper = null;
     static async setWallpaper() {
@@ -41,7 +41,7 @@ export class Settings {
         const effectChooser = document.createElement('div');
         wallpaperView.append(effectChooser);
         const wallpaperConfig = await this.currentWallpaper;
-        const originUrl = await this.getOriginWallaper();
+        const originUrl = await this.getOriginWallpaper();
 
         const radioBox = document.createElement('fieldset');
         wallpaperView.append(radioBox)
@@ -91,14 +91,14 @@ export class Settings {
                 const newWallpaper = new WallpaperConfig(wallpaperOrigin, wallpaper,
                     wallpaperEffect.effect);
                 Settings.currentWallpaper = newWallpaper;
-                Settings.showWallapaer()
+                Settings.showWallpaper()
                 this.close();
             })
             .setNegativeButton('取消')
-            .setNeturalButton('恢复默认', () => {
+            .setNeutralButton('恢复默认', () => {
                 const defaultWallpaper = new WallpaperConfig(STATIC_SOURCE.WALLPAPER);
                 this.currentWallpaper = defaultWallpaper;
-                this.showWallapaer()
+                this.showWallpaper()
                 return false;
             })
         setWallpaperDialog.onShow((view) => {
@@ -125,12 +125,12 @@ export class Settings {
 
     }
     static set currentWallpaper(value) {
-        URL.revokeObjectURL(this._chache_wallpaper);
-        this._chache_wallpaper = null;
+        URL.revokeObjectURL(this._cache_wallpaper);
+        this._cache_wallpaper = null;
         this._current_wallpaper = value;
         LargeStorage.setData(this.WALLPAPER_STORAGE_KEY, value)
             .then(() => {
-                this.showWallapaer()
+                this.showWallpaper()
             });
     }
     static get currentWallpaper() {
@@ -158,7 +158,7 @@ export class Settings {
     static resetDefaultWallpaper() {
         this.currentWallpaper = new WallpaperConfig(STATIC_SOURCE.WALLPAPER);
     }
-    static async getOriginWallaper() {
+    static async getOriginWallpaper() {
         const curWallpaper = await this.currentWallpaper;
         console.log(curWallpaper)
         if (curWallpaper.origin instanceof Blob) {
@@ -167,9 +167,9 @@ export class Settings {
             return curWallpaper.origin;
         }
     }
-    static async getCurrentWallaper() {
+    static async getCurrentWallpaper() {
         const curWallpaper = await this.currentWallpaper;
-        if (this._chache_wallpaper) {
+        if (this._cache_wallpaper) {
             return this._cache_wallpaper;
         } else {
             if (curWallpaper.target instanceof Blob) {
@@ -180,9 +180,9 @@ export class Settings {
             return this._cache_wallpaper;
         }
     }
-    static async showWallapaer(wallpaper) {
+    static async showWallpaper(wallpaper) {
         if (!wallpaper) {
-            wallpaper = await Settings.getCurrentWallaper();
+            wallpaper = await Settings.getCurrentWallpaper();
         }
         document.querySelector('.wallpaper').style.backgroundImage = `url(${wallpaper})`;
         getPrimaryColor(wallpaper)

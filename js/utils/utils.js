@@ -3,7 +3,7 @@
  * A simple index page
  * https://gitee.com/milkpotatoes/stars
  * Copyright (c) 2024 milkpotatoes
- * MIT Licence
+ * MIT License
  */
 
 import { AlertDialog } from "./alertdialog.js";
@@ -18,9 +18,9 @@ export function alertMessage(msg) {
 
 export async function getPrimaryColor(image) {
     let img = new Image();
-    return new Promise((reslove, _reject) => {
+    return new Promise((resolve, _reject) => {
         img.onload = () => {
-            reslove(colorfulImg(img));
+            resolve(colorfulImg(img));
         }
         img.src = image;
     });
@@ -33,12 +33,12 @@ export function showMessage(msg = '', detail = null) {
         .show();
     let showDetail = false;
     if (detail !== null) {
-        dialog.setNeturalButton('详细信息', () => {
+        dialog.setNeutralButton('详细信息', () => {
             if(showDetail) {
-                dialog.setNeturalButton('详细信息');
+                dialog.setNeutralButton('详细信息');
                 dialog.setMessage(msg);
             } else {
-                dialog.setNeturalButton('简要信息');
+                dialog.setNeutralButton('简要信息');
                 dialog.setMessage(detail);
             }
             showDetail = !showDetail;
@@ -68,14 +68,14 @@ export function readLargeStorage(key) {
     if (final_value) {
         if (final_value.length >= MAX_STORAGE_BLOCK_SIZE) {
             let data_parts = 1;
-            let splited_data = null;
+            let spitedData = null;
             do {
-                splited_data = localStorage.getItem(`${key}_${data_parts}`);
-                if (splited_data) {
-                    final_value += splited_data
+                spitedData = localStorage.getItem(`${key}_${data_parts}`);
+                if (spitedData) {
+                    final_value += spitedData
                 }
                 data_parts++;
-            } while (splited_data.length >= MAX_STORAGE_BLOCK_SIZE);
+            } while (spitedData.length >= MAX_STORAGE_BLOCK_SIZE);
         }
     }
     return final_value;

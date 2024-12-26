@@ -99,13 +99,13 @@ class TodoList extends HTMLElement {
             this.autoSortListener(newItem);
             this.addBtn.after(newItem);
             newItem.input.focus();
-            newItem.input.addEventListener('keydown', newItemListerer);
+            newItem.input.addEventListener('keydown', newItemListener);
             newItem.input.addEventListener('blur', (e) => {
-                e.target.removeEventListener('keydown', newItemListerer);
+                e.target.removeEventListener('keydown', newItemListener);
             }, { once: true });
             this.sortElement();
         }
-        const newItemListerer = (e) => {
+        const newItemListener = (e) => {
             if (e.key === 'Enter') {
                 if (e.target.value === CLEAR_DATA_COMMAND) {
                     if (confirm('确定要清空所有数据? 该操作不可恢复')) {
@@ -115,7 +115,7 @@ class TodoList extends HTMLElement {
                         }, 50);
                         return;
                     }
-                    e.target.removeEventListener('keydown', newItemListerer);
+                    e.target.removeEventListener('keydown', newItemListener);
                     e.target.parentElement.remove();
                 } else if (e.target.value !== '') {
                     addTodoItem();
@@ -267,7 +267,7 @@ class TodoItem extends HTMLElement {
 customElements.define('todo-list', TodoList);
 customElements.define('todo-item', TodoItem);
 
-const datas = JSON.parse(localStorage.TODO_LIST_DATA ?? '[]');
+const todoListData = JSON.parse(localStorage.TODO_LIST_DATA ?? '[]');
 
 const todoList = document.querySelector('todo-list');
 
@@ -285,10 +285,10 @@ if (localStorage.TODO_LIST_DATA === undefined) {
     ];
     FIRST_LOAD_NOTE.forEach(name => todoList.append(name));
 } else {
-    todoList.setData(datas);
+    todoList.setData(todoListData);
 }
 
 window.addEventListener('storage', () => {
-    const datas = JSON.parse(localStorage.TODO_LIST_DATA ?? '[]');
-    todoList.setData(datas);
+    const data = JSON.parse(localStorage.TODO_LIST_DATA ?? '[]');
+    todoList.setData(data);
 });
