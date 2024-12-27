@@ -11,6 +11,7 @@ import { STATIC_SOURCE } from "./resource.js";
 import { getPrimaryColor, fileToBase64 } from "./utils/utils.js";
 import WallpaperEffect from "./utils/effect.js";
 import LargeStorage from "./utils/largeStorage.js";
+import { $i18n } from "./utils/i18n.js";
 
 class WallpaperConfig {
     origin;
@@ -47,10 +48,10 @@ export class Settings {
         wallpaperView.append(radioBox)
         const legend = document.createElement('legend');
         radioBox.append(legend);
-        legend.textContent = '特效';
+        legend.textContent = $i18n('{{image-effect}}');
         const effectZHName = {
-            EFFECT_NONE: '无',
-            EFFECT_EPISTEMOLOGY: '长虹玻璃',
+            EFFECT_NONE: $i18n('{{effect-non-effect}}'),
+            EFFECT_EPISTEMOLOGY: $i18n('{{effect-changhong-glass}}'),
         }
         for (let effect in WallpaperEffect.SUPPORTED_EFFECT) {
             const name = WallpaperEffect.SUPPORTED_EFFECT[effect];
@@ -84,9 +85,9 @@ export class Settings {
         radioBox.addEventListener('change', effectListener);
         fileChooser.addEventListener('change', fileListener);
         const setWallpaperDialog = new AlertDialog()
-            .setTitle('设置壁纸')
+            .setTitle($i18n('{{set-wallpaper}}'))
             .setView(wallpaperView)
-            .setPositiveButton('确定', async function () {
+            .setPositiveButton($i18n('{{button-text-confirm}}'), async function () {
                 const wallpaper = await wallpaperEffect.getTargetImg();
                 const newWallpaper = new WallpaperConfig(wallpaperOrigin, wallpaper,
                     wallpaperEffect.effect);
@@ -94,8 +95,8 @@ export class Settings {
                 Settings.showWallpaper()
                 this.close();
             })
-            .setNegativeButton('取消')
-            .setNeutralButton('恢复默认', () => {
+            .setNegativeButton($i18n('{{button-text-cancel}}'))
+            .setNeutralButton($i18n('{{reset-default}}'), () => {
                 const defaultWallpaper = new WallpaperConfig(STATIC_SOURCE.WALLPAPER);
                 this.currentWallpaper = defaultWallpaper;
                 this.showWallpaper()
@@ -189,5 +190,14 @@ export class Settings {
             .then(e => {
                 document.documentElement.style.backgroundColor = `rgb(${e.r}, ${e.g}, ${e.b})`;
             });
+    }
+    static showSettingsPanel() {
+        const dialog = new AlertDialog()
+            .setTitle($i18n('{{dialog-title-settings}}'))
+            .setPositiveButton($i18n('{{button-text-confirm}}'), () => {
+                return false;
+            })
+            .show();
+        const settingsList = {}
     }
 }

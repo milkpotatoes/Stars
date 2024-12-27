@@ -13,6 +13,9 @@ import PagesIndicatorStatus from "./pagesIndicatorStatus.js";
 import ShortcutFilter from "./utils/shortcutsFilter.js";
 import SearchPanel from "./searchPanel.js";
 import { Settings } from "./settings.js";
+import { I18N } from "./utils/i18n.js";
+
+I18N.setLang(navigator.language);
 
 const startProfile = new StartProfile();
 const customShortcutsCollection = new CustomShortcutsCollection(document.querySelector('.shortcuts'));
@@ -27,12 +30,6 @@ searchEngineManager.modifySearchEngine(startProfile.SearchEngine);
 searchEngineManager.modifyActivatedSearchEngine();
 
 function manageConfigs() {
-    // new AlertDialog()
-    //     .setTitle('设置')
-    //     .setMessage('施工中，请等待后续更新')
-    //     .setPositiveButton('确定')
-    //     .setNegativeButton('关闭')
-    //     .show()
     Settings.setWallpaper()
 }
 

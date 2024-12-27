@@ -8,6 +8,7 @@
 
 import { CustomShortcutsCollection } from "./customShortcutsCollection.js";
 import { SearchHistory, StartProfile } from "./utils/data.js";
+import { $i18n } from "./utils/i18n.js";
 
 const SEARCH_ENGINE_LOGO = document.querySelector('.search-logo');
 const SEARCH_ENGINE_SELECT = document.querySelector('.search-select');
@@ -140,7 +141,7 @@ class CommandPanel extends NormalPanel {
         const dirSearch = document.createElement('div');
         dirSearch.setAttribute('data', this.input.value);
         dirSearch.setAttribute('engine-id', this.profiler.DefaultEngine);
-        dirSearch.innerHTML = `<i>使用</i><span>默认搜索引擎</span><i>搜索</i> <i>${this.input.value}</i>`;
+        dirSearch.innerHTML = $i18n('{{search-with-special-search-engine}}', $i18n("{{default-search-engine}}"), this.input.value);
         this.elem.append(dirSearch);
         this.profiler.eachEngine((item, id) => {
             const url = new URL(item.url);
@@ -160,7 +161,7 @@ class CommandPanel extends NormalPanel {
             }
             div.setAttribute('data', `/${name} ${options?.query ?? ''}`);
             div.setAttribute('engine-id', id);
-            div.innerHTML = `<i>使用</i><span>${item.name}</span><i>搜索</i> <i>${options?.query ?? ''}</i>`;
+            div.innerHTML = $i18n('{{search-with-special-search-engine}}', item.name, options?.query ?? '');
             this.elem.append(div);
         }, false);
         if (this.elem.children.length > 1) {
