@@ -44,8 +44,6 @@ jobs:
         with:
           # Upload entire repository
           path: '.'
-      - name: install deps
-        uses: ng-easy/npm-setup@v1.7.2
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
