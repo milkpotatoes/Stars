@@ -23,7 +23,7 @@ class Widget {
         easing: 'ease-in-out',
     };
     static WIDGET_STATUS_HIDDEN = 0;
-    static WIDGET_STATUS_HIDDING = 1;
+    static WIDGET_STATUS_HIDING = 1;
     static WIDGET_STATUS_SHOWN = 2;
     static WIDGET_STATUS_SHOWING = 3;
 
@@ -139,7 +139,7 @@ class Widget {
             this.popup(this.pos.x * radio + e.screenX - e.clientX * radio,
                 this.pos.y * radio + e.screenY - e.clientY * radio);
             this.hide();
-            this.destory();
+            this.destroy();
         });
         this.width = w;
         this.height = h;
@@ -208,7 +208,7 @@ class Widget {
             return;
         }
         document.removeEventListener('click', this.autoClose);
-        this.status = Widget.WIDGET_STATUS_HIDDING;
+        this.status = Widget.WIDGET_STATUS_HIDING;
         this.root.style.filter = Widget.ANIMATE_START_STATE.filter;
         this.root.animate([Widget.ANIMATE_END_STATE, Widget.ANIMATE_START_STATE], Widget.ANIMATE_OPTIONS);
         this.root.animate([
@@ -237,7 +237,7 @@ class Widget {
         }
         this.url = url;
     }
-    destory() {
+    destroy() {
         this.root.remove();
         this.elem.removeAttribute('src')
     }
