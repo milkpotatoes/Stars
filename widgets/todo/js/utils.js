@@ -1,22 +1,27 @@
 const FORMATTER = [
     {
+        // matches `[name](href)`
         search: /(^|[^\\])\[(.+?)\]\((.+?)?\)/,
         replace: '<a href="$2" target="_blank">$1</a>',
     },
     {
+        // matches `**bold**`
         search: /(^|[^\\])\*{2}([^\*]+?)\*{2}/,
         replace: '<b>$1</b>',
     },
     {
+        // matches `*italic*`
         search: /(^|[^\\])\*([^\*]+?)\*/,
         replace: '<i>$1</i>',
     },
     {
+        // matches `~~delete~~`
         search: /(^|[^\\])~~([^~]+?)~~/,
         replace: '<del>$1</del>',
     },
     {
-        search: /(^|[^\\])\{(\\w+?)\}/,
+        // matches `{icon-name}`
+        search: /(^|[^\\])\{(\w+?)\}/,
         replace: '<span class="material-icon">$1</span>',
     },
 ];
@@ -24,7 +29,6 @@ const FORMATTER = [
 export function todoFormatter(content) {
     content = content.replace(/ {2,}/g, (str) => str.replace(/ /g, '&nbsp;'));
     for (let { search: reg, replace: repl } of FORMATTER) {
-        console.log(reg, repl)
         let testResult = reg.exec(content);
         let watchDog = 0;
         while (testResult) {
