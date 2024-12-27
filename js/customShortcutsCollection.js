@@ -8,7 +8,7 @@
 
 import { AlertDialog } from "./utils/alertdialog.js";
 import { fileToBase64 } from "./utils/utils.js";
-import { I18N } from "./utils/i18n.js";
+import { $i18n } from "./utils/i18n.js";
 import { Shortcut } from "./utils/data.js";
 import { ShortcutCollections } from "./utils/data.js";
 import { showMessage } from "./utils/utils.js";
@@ -101,18 +101,18 @@ export class CustomShortcutsCollection extends ShortcutCollections {
 </div>`;
         const collection = this;
         const dialog = new AlertDialog()
-            .setTitle(I18N.i18nString(name === '' ? '{{dialog-title-add-shortcut}}' : '{{dialog-title-edit-shortcut}}'))
-            .setView(I18N.i18nString(customView))
-            .setPositiveButton(I18N.i18nString('{{button-text-confirm}}'), function () {
+            .setTitle($i18n(name === '' ? '{{dialog-title-add}}' : '{{dialog-title-edit}}'))
+            .setView($i18n(customView))
+            .setPositiveButton($i18n('{{button-text-confirm}}'), function () {
                 const _name = this.querySelector("input.name").value;
                 const _icon = this.querySelector("img.icon").src;
                 const _url = this.querySelector("input.url").value;
                 const _desc = this.querySelector("input.desc").value;
                 const _type = this.querySelector("input.is-widget").checked ? Shortcut.SHORTCUT_TYPE_WIDGET : Shortcut.SHORTCUT_TYPE_SHORTCUT;
                 if (_name === '') {
-                    showMessage(I18N.i18nString('{{text-shortcut-empty-name}}'))
+                    showMessage($i18n('{{text-shortcut-empty-name}}'))
                 } else if (_url === '') {
-                    showMessage(I18N.i18nString('{{text-shortcut-empty-link}}'))
+                    showMessage($i18n('{{text-shortcut-empty-link}}'))
                 } else {
                     try {
                         new URL(_url);
@@ -122,29 +122,30 @@ export class CustomShortcutsCollection extends ShortcutCollections {
                         collection.saveLinks();
                         this.close();
                     } catch (e) {
-                        showMessage(I18N.i18nString('{{text-shortcut-invalid-link}}'), e.toString());
+                        showMessage($i18n('{{text-shortcut-invalid-link}}'), e.toString());
                     }
                 }
                 return true;
             })
-            .setNeutralButton(I18N.i18nString('{{text-get-favicon}}'), function () {
+            .setNeutralButton($i18n('{{text-get-favicon}}'), function () {
+                console.log($i18n('{{text-get-favicon}}'))
                 const url = this.querySelector("input.url").value;
                 const icon = this.querySelector("img.icon");
                 const prev_icon = icon.src;
                 try {
                     const url1 = new URL(url).origin + '/favicon.ico';
                     icon.onerror = (err) => {
-                        showMessage(I18N.i18nString('{{text-get-favicon-failed}}'), err.toString());
+                        showMessage($i18n('{{text-get-favicon-failed}}'), err.toString());
                         icon.src = prev_icon;
                         icon.onerror = undefined;
                     };
                     icon.src = url1;
                 } catch (err) {
-                    showMessage(I18N.i18nString('{{text-failed-to-parse-url}}'), err.toString());
+                    showMessage($i18n('{{text-failed-to-parse-url}}'), err.toString());
                 }
                 return true;
             })
-            .setNegativeButton(I18N.i18nString('{{button-text-cancel}}'))
+            .setNegativeButton($i18n('{{button-text-cancel}}'))
             .show();
         const preview = dialog.querySelector('img.icon');
         const file_select = dialog.querySelector('input.icon');
@@ -190,10 +191,10 @@ export class CustomShortcutsCollection extends ShortcutCollections {
     projectIndex() {
         localStorage.AddedProjectIndex = new Date().getTime();
         return {
-            name: I18N.i18nString('{{home-of-project}}'),
+            name: $i18n('{{home-of-project}}'),
             url: 'https://gitee.com/milkpotatoes/stars',
             icon: 'src/start-512x512.png',
-            desc: '个性化新建标签页',
+            desc: '{{project-description}}',
         };
     };
     filter(key = '') {
