@@ -729,7 +729,7 @@ html,
 }
 
 .search-history>.focus>.delete::after {
-    content: "Delete";
+    content: "Ctrl + D";
     font-family: initial;
 }
 

@@ -59,7 +59,7 @@ class NormalPanel {
         this.elem.querySelector('.focus')?.classList.remove('focus');
         this.focus = id;
         if (id > -1) {
-            this.elem.children[id].classList.add('focus');
+            this.elem.children[id]?.classList.add('focus');
         }
     }
     focusNext() {
@@ -256,7 +256,7 @@ class HistoryPanel extends NormalPanel {
             this.history.forEach(history => {
                 const div = document.createElement('div');
                 div.setAttribute('data', history.key);
-                div.innerHTML = `${history.key}<span class="delete material-icon"></span>`;
+                div.innerHTML = `<i>${history.key}</i><span class="delete material-icon"></span>`;
                 this.elem.append(div);
             });
         } else {
@@ -265,7 +265,7 @@ class HistoryPanel extends NormalPanel {
                 const history = matchedHistory[i];
                 const div = document.createElement('div');
                 div.setAttribute('data', history.key);
-                div.innerHTML = `${history.key}<span class="delete material-icon"></span>`;
+                div.innerHTML = `<i>${history.key}</i><span class="delete material-icon"></span>`;
                 this.elem.append(div);
             }
         }
@@ -274,10 +274,13 @@ class HistoryPanel extends NormalPanel {
         }
     }
     deleteHistory(id = this.focus) {
-        if (id >= 0) {
-            this.history.deleteHistory(this.elem.children[id].getAttribute('data'));
+        if (id < 0) {
+            return;
         }
+        this.history.deleteHistory(this.elem.children[id]?.getAttribute('data'));
+        this.input.value = this.originKey;
         this.updateCommand(this.searchPanel.checkSearchMode(this.originKey));
+        this.focusAt();
     }
     addHistory(key) {
         this.history.recordHistory(key);
@@ -490,9 +493,9 @@ export default class SearchPanel {
                 for (let key in panels) {
                     panels[key].focusNext();
                 }
-            } else if (e.key === 'Delete' && panels.HISTORY_PANEL.activated) {
+            } else if (e.key === 'd' && e.ctrlKey && panels.HISTORY_PANEL.activated) {
                 e.preventDefault();
-                panels.HISTORY_PANEL.deleteHistory()
+                panels.HISTORY_PANEL.deleteHistory();
             }
         });
 

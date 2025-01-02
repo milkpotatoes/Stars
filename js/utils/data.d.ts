@@ -65,6 +65,7 @@ interface History {
 export class SearchHistory {
     searchHistory: History[];
     forEach(callback: (history: History, index: number) => void): void
+    clearKey(key: string): string;
     filterHistory(key: string): History[];
     deleteHistory(key: string): void;
 }

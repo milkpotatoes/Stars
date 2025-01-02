@@ -701,7 +701,11 @@ export class SearchHistory {
             this.saveHistory();
         }
     }
+    clearKey(key) {
+        return key.replace(/([\[\]\(\)\+\*\.\\])/g, '\\$1');
+    }
     filterHistory(key) {
+        key = this.clearKey(key.toLowerCase());
         return this.searchHistory.filter(val => {
             return val.key.match(key) !== null;
         });
@@ -713,6 +717,7 @@ export class SearchHistory {
                 this.searchHistory.splice(i, 1);
             }
         }
+        this.saveHistory();
     }
     clearHistory() {
         this.searchHistory = [];
